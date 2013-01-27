@@ -6,11 +6,39 @@
   </head>
   <body>
 	<h2>Login</h2>
-	<form name="input" action="confirm.asp" method="get">
-	Username: <input type="text" name="firstname"><br>
+	<form name="input">
+	Username: <input type="text" name="username"><br>
 	Password: <input type="password" name="password"><br><br>
-    <input type="submit" value="Submit">
+    <input type="button" value="Submit" onclick="mySubmit()" >
 	<input type="button" value="Cancel">
-	</form>
+	</form>	
+	
+	<div class="container"></div>
+	<script src="/vendor/jquery.js"></script>
+    <script src="/vendor/jquery.cookie.js"></script>
+
+    <script type="text/javascript">
+      function mySubmit() {
+        $('input').submit(function(ev) {
+          ev.preventDefault();
+
+          var data = {};
+
+          data.username = $('input.username').val(),
+          data.password = $('input.password').val();
+
+          var req = $.ajax({
+            url: '/api/login',
+            type: 'POST',
+            data: JSON.stringify(data)
+    	  });
+
+    	  req.done(function(result) {
+            $.cookie('user_key', result.user_key);
+            $.cookie('key', result.key);
+    	  });
+        }
+      }
+    </script>
   </body>
 </html>
