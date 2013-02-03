@@ -3,43 +3,44 @@
   <head>
     <meta charset="utf-8">
     <title>Coupons Login</title>
+    <script src="/vendor/jquery.js"></script>
+    <script src="/vendor/jquery.cookie.js"></script>
   </head>
   <body>
 	<h2>Login</h2>
-	<form name="input" method="POST" action="/api/login">
-	Username: <input type="text" name="username"><br>
-	Password: <input type="password" name="password"><br><br>
-    <input type="submit" value="Submit" onclick="mySubmit()">
+	<form id="login" method="POST" action="/api/login">
+	Username: <input type="text" id="username"><br>
+	Password: <input type="password" id="password"><br><br>
+    <input type="submit" value="Submit">
 	<input type="button" value="Cancel">
 	</form>	
 	
 	<div class="container"></div>
-	<script src="/vendor/jquery.js"></script>
-    <script src="/vendor/jquery.cookie.js"></script>
+	<script>
+	  $('#login').submit(function(ev) {
+  		ev.preventDefault();
+  		
+  		var data = {};
+    	data.username = $('#username').val(),
+    	data.password = $('#password').val();
+  		
+  		var req = $.ajax({
+        	url: '/api/login',
+        	type: 'POST',
+        	data: JSON.stringify(data)
+    	});
+    	
+    	req.done(function(result) {
+    	  alert('Received ' + JSON.stringify(result));
+		});
 
-    <script type="text/javascript">
-      function mySubmit() {
-        $('input').submit(function(ev) {
-          ev.preventDefault();
-
-          var data = {};
-
-          data.username = $('input.username').val(),
-          data.password = $('input.password').val();
-
-          var req = $.ajax({
-            url: '/api/login',
-            type: 'POST',
-            data: JSON.stringify(data)
-    	  });
-
-    	  req.done(function(result) {
-            $.cookie('user_key', result.user_key);
-            $.cookie('key', result.key);
-    	  });
-        }
-      }
+		req.fail(function(error) {
+    	  alert('Error ' + error);
+		});
+  		//return false;
+	  });
     </script>
+	    
   </body>
 </html>
 

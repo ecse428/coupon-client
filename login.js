@@ -12,8 +12,9 @@ req.fail(function(error) {
 })
 
 
-var login = {
-  init: function() {
+
+var app = {
+  login_request: function (){
     $('form.login-form').submit(function(ev) {
     ev.preventDefault();
 
@@ -27,14 +28,32 @@ var login = {
         type: 'POST',
         data: JSON.stringify(data)
     });
+  };
+};
 
-    req.done(function(result) {
-        $.cookie('user_key', result.user_key);
-        $.cookie('key', result.key);
-    });
-  });
-}
+function init() {
+  		$("form").submit(function(ev) {
+    	ev.preventDefault();
 
-jQuery(function() {
-  login.init();
-});
+		alert('Handler for .submit() called.');
+
+    	var data = {};
+
+    	data.username = $('#username').val(),
+    	data.password = $('#password').val();
+
+    	var req = $.ajax({
+        	url: '/api/login',
+        	type: 'POST',
+        	data: JSON.stringify(data)
+    	});
+
+    	req.done(function(result) {
+        	$.cookie('user_key', result.user_key);
+        	$.cookie('key', result.key);
+    	});
+	  }
+
+//jQuery(function() {
+  //login.init();  
+//});
