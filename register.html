@@ -8,13 +8,16 @@
   <body>
     <h2 id="title">Register</h2>
     <form id="register" action="confirm.asp" method="get">
-	First name: <input type="text" name="firstname"><br>
-	Last name: <input type="text" name="lastname"><br>
-	Username: <input type="text" name="username"><br>
-	Password: <input type="password" name="password"><br><br>	
-	<input type="submit" value="Submit">
-	<input type="reset" value="Reset">
-	<input type="button" value="Cancel">
+    <div>My name is ... 
+      <input placeholder="Firstname" type="text" class="firstname"> 
+      <input placeholder="Lastname" type="text" class="lastname">
+    </div> 
+	<div>Username: <input placeholder="username" type="text" class="username"></div>	
+	<div>Password: <input placeholder="password" type="password" class="password"></div>	
+	<div>Email: <input placeholder="abc@your.domain" type="text" class="email"></div>	
+	<div class="submit">
+	  <input type="submit" value="Register">
+	</div>
     </form>
   </body>
 </html>

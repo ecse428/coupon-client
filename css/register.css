@@ -1,5 +1,20 @@
 #title {
-  text-align: center;}
+  text-align: left;
+  margin: 10px;
+  padding-bottom: 10px;
+  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;}
 
 #register {
-  text-align: center;}
+  text-align: left;
+  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;}
+  
+div {
+  margin: 10px;
+  padding-bottom: 6px;}
+
+/* 
+.submit {
+  text-align: right;}
+*/
+  
+  
