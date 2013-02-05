@@ -1,6 +1,17 @@
 /* default style sheet */
 
-body, div, table, p, span, a, h1, h2, h3, h4  {
+/* this part of code should be in mixin.less */
+.btn {
+	border:1px solid #fff;
+	border-radius:5px;
+	padding:3px 5px;
+	background:#fff;
+	color:#143352;
+}
+
+/* end */
+
+body, div, table,form, p, span, a, h1, h2, h3, h4  {
 	margin:0;
 	padding:0;
 	font-family: Arial, Sans-serif;
@@ -24,9 +35,10 @@ a {
 
 .headerContainer {
 	width:100%;
-	padding:4px;
+	padding:5px;
+	padding-bottom:8px;
 	background:#143352;
-	box-shadow:1px 1px 8px #666;
+	box-shadow:1px 1px 8px #444;
 	position:fixed;
 	top:0;
 	left:0;
@@ -51,11 +63,17 @@ a {
 				}
 			}
 			
-			#login {
-				input {
-					width:120px;
+			
+			&.authentication {
+				#login {
+					width:360px;
+					input {
+						width:120px;
+					}
+					
 				}
 			}
+			
 		}
 	}
 }

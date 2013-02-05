@@ -3,48 +3,59 @@
   <head>
     <meta charset="utf-8">
     <title>Coupons</title>
-
-    <link href="css/index.css" type="text/css" rel="stylesheet" />
-
     <script src="/vendor/jquery.js"></script>
     <script src="/vendor/jquery.cookie.js"></script>
     <script src="main.js"></script>
-    <!--
-    <link href="css/index.css" type="text/css" rel="stylesheet" />
-    -->
     <link href="/less/index.less" type="text/less" rel="stylesheet" />
     <script src="/vendor/less.js" type="text/javascript"></script>
     
   </head>
 
   <body>
-    <div class="header"></div>
-    <div class="menu">
-      <h1 id="logo">COUPON MANAGEMENT SYSTEM</h1>
-      <ul id="navigation">
-        <li>
-          <form id="login">
-            <input placeholder="Username" type="text" class="username" />
-            <input placeholder="Password" type="password" class="password" />
-            <input type="submit" value="Login" />
-          </form>
-        <li id="register">
-          <a href="/register.html" onClick="">Register</a>
-        </li>
-      </ul>
+    <div class="headerContainer">
+		<div class="header">
+			<div class="subsection brand">
+				<h1 id="logo">Coupon Management<sup>beta</sup></h1>
+			</div>
+			<div class="subsection authentication">
+				<form id="login">
+					<input placeholder="Username" type="text" class="username" />
+					<input placeholder="Password" type="password" class="password" />
+					<button>Login</button>
+				</form>
+				
+			</div>
+		</div>	
+	</div>
+    <div class="contentContainer">
+		<div class="nav-container"></div>
+		<p id="image">
+		  <img src="imgs/coupon.jpg"/ width="150" height="150" alt="coupon">
+		  <img src="imgs/ticket.gif"/ width="150" height="150" alt="ticket">
+		</p>
     </div>
+    
+    
 
-    <div class="nav-container"></div>
-    <p id="image">
-      <img src="imgs/coupon.jpg"/ width="150" height="150" alt="coupon">
-      <img src="imgs/ticket.gif"/ width="150" height="150" alt="ticket">
-    </p>
+    
 
-    <div class="container"></div>
-
-    <hr />
-    <div class="footer">
-      <p class="version"><em>Design by: ECSE 428</em></p>
+    <div class="footerContainer">
+		<div class="footer">
+			<div class="subsection">
+				<p class="version">Coupon Management 2013</p>
+			</div>
+			<div class="subsection">
+				<ul>
+					<li>About</li>
+					<li>Help</li>
+					<li>Privacy</li>
+					<li>API</li>
+					<li>More ...</li>
+				</ul>
+			</div>
+		</div>
+		
+		
     </div>
   </body>
 </html>
