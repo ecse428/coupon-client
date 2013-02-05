@@ -3,6 +3,9 @@
   <head>
     <meta charset="utf-8">
     <title>Coupons</title>
+
+    <link href="css/index.css" type="text/css" rel="stylesheet" />
+
     <script src="/vendor/jquery.js"></script>
     <script src="/vendor/jquery.cookie.js"></script>
     <script src="main.js"></script>
@@ -13,37 +16,32 @@
     <script src="/vendor/less.js" type="text/javascript"></script>
     
   </head>
+
   <body>
     <div class="header"></div>
     <div class="menu">
-	  <h1 id="logo">COUPON MANAGEMENT SYSTEM</h1>
+      <h1 id="logo">COUPON MANAGEMENT SYSTEM</h1>
       <ul id="navigation">
-        <li><a id="login" href="/login.html">Login</a> 
-        <li><a id="register" href="/register.html" onClick="">Register</a>
+        <li>
+          <form id="login">
+            <input placeholder="Username" type="text" class="username" />
+            <input placeholder="Password" type="password" class="password" />
+            <input type="submit" value="Login" />
+          </form>
+        <li id="register">
+          <a href="/register.html" onClick="">Register</a>
+        </li>
       </ul>
     </div>
-    
-    <div class="nav-container"></div> 
+
+    <div class="nav-container"></div>
     <p id="image">
       <img src="imgs/coupon.jpg"/ width="150" height="150" alt="coupon">
       <img src="imgs/ticket.gif"/ width="150" height="150" alt="ticket">
     </p>
-    
+
     <div class="container"></div>
 
-    <script>
-      $(function() {    
-   		$("#login").click(function(ev) {
-   		  ev.preventDefault();
-          $('.nav-container').load('login.html');
-        });
-                
-        $("#register").click(function(ev) {
-          ev.preventDefault();
-          $('.nav-container').load('register.html');   
-        });   
-      });
-    </script>
     <hr />
     <div class="footer">
       <p class="version"><em>Design by: ECSE 428</em></p>
