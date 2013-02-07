@@ -22,6 +22,7 @@ var app = {
       data: JSON.stringify(data)
     });
 
+
     req.done(cb);
     req.fail(function(err) {
       cb({ error: err.error() });
@@ -41,12 +42,30 @@ var app = {
       $.cookie('key', result.key);
       cb({ username: result.username });
     });
+  },
+  
+  register: function(username, password, email, firstname, lastname, cb) {
+    var data = { username: username,
+    			 password: password,
+    			 email: email,
+    			 firstname: firstname,
+    			 lastname: lastname };
+    app.api('/users', 'POST', data, function(result) {
+      if (result.error) {
+        alert('Error registering');
+        return;
+      }
+      
+      cb({ username: result.username });
+    });
   }
+  
 };
 
 var handlers = {
   setup: function() {
-    handlers.login();
+    handlers.register();
+    handlers.login();    
   },
 
   login: function() {
@@ -57,6 +76,21 @@ var handlers = {
 
       app.login(username, password, function(result) {
         $('#login').parent().html('<p>Welcome ' + result.username + '</p>');
+      });
+    });
+  },
+  
+  register: function() {
+    $('#register').submit(function(ev) {
+      ev.preventDefault();
+      var username = $('#register .username').val(),
+          password = $('#register .password').val(),
+          email = $('#register .email').val(),
+          firstname = $('#register .firstname').val(),
+          lastname = $('#register .lastname').val();
+          
+      app.register(username, password, email, firstname, lastname, function(result) {
+        alert(result.username);
       });
     });
   }

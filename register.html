@@ -4,17 +4,27 @@
     <meta charset="utf-8">
     <title>Coupons Register</title>
     <link href="css/register.css" type="text/css" rel="stylesheet" />
+    <script src="/vendor/jquery.js"></script>
+    <script src="/vendor/jquery.cookie.js"></script>
+    <script src="main.js"></script>
   </head>
   <body>
     <h1 id="title">Register</h1>
-    <form id="register" action="confirm.asp" method="get">
+    <form id="register">
     <div>My name is ... 
       <input placeholder="Firstname" type="text" class="firstname"> 
       <input placeholder="Lastname" type="text" class="lastname">
     </div> 
 	<div>Username: <input placeholder="username" type="text" class="username"></div>	
 	<div>Password: <input placeholder="password" type="password" class="password"></div>	
-	<div>Email: <input placeholder="abc@your.domain" type="text" class="email"></div>	
+	<div>Email: <input placeholder="abc@your.domain" type="text" class="email"></div>
+	<div>Credit Card Number: <input placeholder="1234567890123456" type="text" class="creditnumber"></div>
+	<div>Expiry Date: <input placeholder="MMAA" type="text" class="expirydate"></div>
+	<div>Paypal Account: <input placeholder="account name" type="text" class="paypal"></div>
+	<div>I'd like to register as: <br />
+	  <input type="radio" name="g1" value="consumer" class="consumer" checked="checked"> Consumer
+	  <input type="radio" name="g1" value="company" class="company"> Company
+	</div>	
 	<div class="submit">
 	  <input type="submit" value="Register">
 	</div>
