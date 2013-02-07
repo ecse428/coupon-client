@@ -58,8 +58,16 @@ var app = {
       
       cb({ username: result.username });
     });
-  }
+  },
   
+  reg_num_only: function() {
+    $('.creditnumber').numeric();
+    $('.phone').numeric();
+  },
+  
+  reg_validate: function() {
+    $("#register").validate();
+  }
 };
 
 var handlers = {
@@ -99,4 +107,5 @@ var handlers = {
 jQuery(function() {
   handlers.setup();
   app.init();
+  app.reg_num_only();
 });
