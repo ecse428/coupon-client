@@ -7,14 +7,15 @@
 #register {
   text-align: left;
   font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;}
-  
+
 div {
   margin: 10px;
-  padding-bottom: 6px;
+  /*padding-bottom: 6px;*/
   clear: both;}
 
-em { font-weight: bold; padding-right: 1em; vertical-align: top; }
+em { font-weight: bold; vertical-align: top; }
 label { width: 15em; float: left; }
+label.error { float: none; color: red; padding-left: .5em; }
 /* 
 .submit {
   text-align: right;}

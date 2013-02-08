@@ -59,7 +59,7 @@ var app = {
     			 accounttype: accounttype};
     app.api('/users', 'POST', data, function(result) {
       if (result.error) {
-        alert('Error registering');
+        alert(JSON.stringify(result.error.responseText));
         return;
       }
       
@@ -70,10 +70,6 @@ var app = {
   reg_num_only: function() {
     $('.creditnumber').numeric();
     $('.phonenumber').numeric();
-  },
-  
-  reg_validate: function() {
-    $('#register').validate();
   },
   
   setAddress: function() {
@@ -88,7 +84,8 @@ var app = {
   validateReg: function() {
     $("#register").validate({
       rules: {
-        required: "required",
+        username: "required",
+        password: "required",
         email: {
           required: true,
           email: true
@@ -137,6 +134,7 @@ var handlers = {
       app.register(username, password, email, firstname, lastname, address, phonenumber,
       			   creditnumber, expirymonth, expiryyear, paypal, accounttype, function(result) {
         alert('Registration Successful');
+        document.location.href = 'index.html';
       });
     });
   }

@@ -14,20 +14,20 @@
     <h1 id="title">Register</h1>
     <form id="register">
     <div><label for="acctype">I'd like to register as: </label>
-	  <input type="radio" name="acctype" value="consumer" class="accounttype"> Consumer
+	  <input type="radio" name="acctype" value="consumer" class="accounttype" checked> Consumer
 	  <input type="radio" name="acctype" value="company" class="accounttype"> Company
 	</div>
     
-    <div><label for="cname">My name is ... <em>*</em></label>
-      <input placeholder="Firstname" name="required" type="text" class="firstname"><input placeholder="Lastname" name="required" type="text" class="lastname">
+    <div><label for="cname">My name is ... </label>
+      <input placeholder="Firstname" type="text" class="firstname"><input placeholder="Lastname" type="text" class="lastname">
     </div> 
 	
 	<div><label for="uname">Username: <em>*</em></label>
-	  <input placeholder="Username" name="required" type="text" class="username">
+	  <input placeholder="Username" name="username" type="text" class="username">
 	</div>	
 	
 	<div><label for="pword">Password: <em>*</em></label>
-	  <input placeholder="Password" name="required" type="password" class="password">
+	  <input placeholder="Password" name="password" type="password" class="password">
 	</div>	
 	
 	<div><label for="email">Email: <em>*</em></label>
@@ -95,7 +95,9 @@
 	
 	<div><label for="paypal">Paypal Account: </label>
 	   <input placeholder="account name" type="text" class="paypal">
-	</div>	
+	</div>
+	
+	<div><p><em>*</em> - Required</p></div>
 	<div class="submit">
 	  <input type="submit" value="Register">
 	</div>
