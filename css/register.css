@@ -10,8 +10,11 @@
   
 div {
   margin: 10px;
-  padding-bottom: 6px;}
+  padding-bottom: 6px;
+  clear: both;}
 
+em { font-weight: bold; padding-right: 1em; vertical-align: top; }
+label { width: 15em; float: left; }
 /* 
 .submit {
   text-align: right;}

@@ -44,12 +44,19 @@ var app = {
     });
   },
   
-  register: function(username, password, email, firstname, lastname, cb) {
+  register: function(username, password, email, firstname, lastname, address, phonenumber, 
+  					 creditnumber, expirymonth, expiryyear, paypal, accounttype, cb) {
     var data = { username: username,
     			 password: password,
     			 email: email,
     			 firstname: firstname,
-    			 lastname: lastname };
+    			 lastname: lastname,
+    			 address: address,
+    			 phonenumber: phonenumber,
+    			 expirymonth: expirymonth,
+    			 expiryyear: expiryyear,
+    			 paypal: paypal,
+    			 accounttype: accounttype};
     app.api('/users', 'POST', data, function(result) {
       if (result.error) {
         alert('Error registering');
@@ -62,11 +69,32 @@ var app = {
   
   reg_num_only: function() {
     $('.creditnumber').numeric();
-    $('.phone').numeric();
+    $('.phonenumber').numeric();
   },
   
   reg_validate: function() {
-    $("#register").validate();
+    $('#register').validate();
+  },
+  
+  setAddress: function() {
+	var address = "";
+    $("#address1, #address2, #city, #province, #postalcode").each(function(){
+    	address += $.trim($(this).val()) + " ";
+    });
+
+    document.getElementById("address").value=address;
+  },
+  
+  validateReg: function() {
+    $("#register").validate({
+      rules: {
+        required: "required",
+        email: {
+          required: true,
+          email: true
+        }
+      }      
+    });
   }
 };
 
@@ -91,14 +119,24 @@ var handlers = {
   register: function() {
     $('#register').submit(function(ev) {
       ev.preventDefault();
+      app.setAddress();
+      
       var username = $('#register .username').val(),
           password = $('#register .password').val(),
           email = $('#register .email').val(),
           firstname = $('#register .firstname').val(),
-          lastname = $('#register .lastname').val();
+          lastname = $('#register .lastname').val(),
+          address = $('#register #address').val(),
+          phonenumber = $('#register .phonenumber').val(),
+          creditnumber = $('#register .creditnumber').val(),
+          expirymonth = $('#register .expirymonth').val(),
+          expiryyear = $('#register .expiryyear').val(),
+          paypal = $('#register .paypal').val(),
+          accounttype = $('#register .accounttype').val();                    
           
-      app.register(username, password, email, firstname, lastname, function(result) {
-        alert(result.username);
+      app.register(username, password, email, firstname, lastname, address, phonenumber,
+      			   creditnumber, expirymonth, expiryyear, paypal, accounttype, function(result) {
+        alert('Registration Successful');
       });
     });
   }
@@ -108,4 +146,5 @@ jQuery(function() {
   handlers.setup();
   app.init();
   app.reg_num_only();
+  app.validateReg();
 });

@@ -7,31 +7,64 @@
     <script src="/vendor/jquery.js"></script>
     <script src="/vendor/jquery.cookie.js"></script>
     <script src="/vendor/jquery.numeric.js"></script>
-    <!--<script src="/vendor/jquery.validate.js"></script>-->
+    <script src="/vendor/jquery.validate.js"></script>
     <script src="main.js"></script>
   </head>
   <body>
     <h1 id="title">Register</h1>
     <form id="register">
-    <div>I'd like to register as: <br />
-	  <input type="radio" name="g1" value="consumer" class="consumer" checked="checked"> Consumer
-	  <input type="radio" name="g1" value="company" class="company"> Company
+    <div><label for="acctype">I'd like to register as: </label>
+	  <input type="radio" name="acctype" value="consumer" class="accounttype" checked="checked"> Consumer
+	  <input type="radio" name="acctype" value="company" class="accounttype"> Company
 	</div>
-    <div>My name is ... 
-      <input placeholder="Firstname" type="text" class="firstname"> 
-      <input placeholder="Lastname" type="text" class="lastname">
+    
+    <div><label for="cname">My name is ... <em>*</em></label>
+      <input placeholder="Firstname" name="required" type="text" class="firstname"><input placeholder="Lastname" name="required" type="text" class="lastname">
     </div> 
-	<div>Username: <input placeholder="username" type="text" class="username"></div>	
-	<div>Password: <input placeholder="password" type="password" class="password"></div>	
-	<div>Email: <input placeholder="abc@your.domain" type="text" class="email"></div>
-	<div>Address Line 1: <input type="text" size="50" class="address1"></div>
-	<div>Address Line 2: <input type="text" size="50" class="address2"></div>
-	<div>City: <input type="text" class="address3"></div>
-	<div>Province: <input type="text" class="address4"></div>
-	<div>Postal Code: <input placeholder="A1B 2C3" type="text" size="8" maxlength="6" class="postalcode"></div>
-	<div>Phone Number: <input placeholder="5141234567" type="text" class="phone"></div>
-	<div>Credit Card Number: <input placeholder="1234567890123456" type="text" size="22" maxlength="16" class="creditnumber"></div>
-	<div>Credit Card Expiry Date:
+	
+	<div><label for="uname">Username: <em>*</em></label>
+	  <input placeholder="Username" name="required" type="text" class="username">
+	</div>	
+	
+	<div><label for="pword">Password: <em>*</em></label>
+	  <input placeholder="Password" name="required" type="password" class="password">
+	</div>	
+	
+	<div><label for="email">Email: <em>*</em></label>
+	  <input placeholder="abc@your.domain" name="email" type="text" class="email">
+	</div>
+	
+	<input type="hidden" id="address" value="">	
+	
+	<div><label for="add1">Address Line 1: </label>
+	  <input type="text" size="50" id="address1">
+	</div>
+	
+	<div><label for="add2">Address Line 2:</label>
+	  <input type="text" size="50" id="address2">
+	</div>
+	
+	<div><label for="city">City: </label>
+	  <input type="text" id="city">
+	</div>
+	
+	<div><label for="prov">Province: </label>
+	  <input type="text" id="province">
+	</div>
+	
+	<div><label for="pc">Postal Code: </label>
+	  <input placeholder="A1B 2C3" type="text" size="8" maxlength="6" id="postalcode">
+	</div>
+	
+	<div><label for="phone">Phone Number: </label>
+	  <input placeholder="5141234567" type="text" class="phonenumber">
+	</div>
+	
+	<div><label for="ccnumber">Credit Card Number: </label>
+	  <input placeholder="1234567890123456" type="text" size="22" maxlength="16" class="creditnumber">
+	</div>
+	
+	<div><label for="ccexp">Credit Card Expiry Date: </label>
 	  <select class="expirymonth">
 	    <option value="jan">(01) January</option>
 	    <option value="feb">(02) February</option>
@@ -59,7 +92,10 @@
 	    <option value="2022">2022</option>
 	    <option value="2023">2023</option>
 	  </select></div>	  
-	<div>Paypal Account: <input placeholder="account name" type="text" class="paypal"></div>	
+	
+	<div><label for="paypal">Paypal Account: </label>
+	   <input placeholder="account name" type="text" class="paypal">
+	</div>	
 	<div class="submit">
 	  <input type="submit" value="Register">
 	</div>
