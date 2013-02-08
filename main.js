@@ -132,7 +132,7 @@ var handlers = {
           expirymonth = $('#register .expirymonth').val(),
           expiryyear = $('#register .expiryyear').val(),
           paypal = $('#register .paypal').val(),
-          accounttype = $('#register .accounttype').val();                    
+          accounttype = $('form input[type=radio]:checked').val();                    
           
       app.register(username, password, email, firstname, lastname, address, phonenumber,
       			   creditnumber, expirymonth, expiryyear, paypal, accounttype, function(result) {
