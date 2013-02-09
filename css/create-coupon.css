@@ -4,20 +4,10 @@
   padding-bottom: 10px;
   font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;}
 
-#register {
+#create-coupon {
   text-align: left;}
 
 div {
   margin: 10px;
   /*padding-bottom: 6px;*/
   clear: both;}
-
-em { font-weight: bold; vertical-align: top; }
-label { width: 15em; float: left; }
-label.error { float: none; color: red; padding-left: .5em; }
-/* 
-.submit {
-  text-align: right;}
-*/
-  
-  

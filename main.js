@@ -67,7 +67,8 @@ var app = {
     });
   },
   
-  reg_num_only: function() {
+  
+  register_number_only: function() {
     $('.creditnumber').numeric();
     $('.phonenumber').numeric();
   },
@@ -81,7 +82,7 @@ var app = {
     document.getElementById("address").value=address;
   },
   
-  validateReg: function() {
+  register_validation: function() {
     $("#register").validate({
       rules: {
         username: "required",
@@ -92,6 +93,10 @@ var app = {
         }
       }      
     });
+  },
+  
+  date_pick: function() {
+    $("#datepicker").datepicker();
   }
 };
 
@@ -137,12 +142,16 @@ var handlers = {
         document.location.href = 'index.html';
       });
     });
-  }
+  },
+  
+  view_profile: function() {
+  
+  },  
 };
 
 jQuery(function() {
   handlers.setup();
   app.init();
-  app.reg_num_only();
-  app.validateReg();
+  app.register_number_only();
+  app.register_validation();
 });
