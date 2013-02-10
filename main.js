@@ -97,13 +97,32 @@ var app = {
   
   date_pick: function() {
     $("#datepicker").datepicker();
+  },
+  
+  create_coupon: function(name, description, logo_url, amount, price, coupontype, expirydate, cb) {
+    var data = { name: name,
+    			 description: description,
+    			 logo_url: logo_url,
+    			 amount: amount,
+    			 price: price,
+    			 coupontype: coupontype,
+    			 expirydate: expirydate };
+    app.api('/coupons', 'POST', data, function(result) {
+      if (result.error) {
+        alert(JSON.stringify(result.error.responseText));
+        return;
+      }
+      
+      cb({ username: result.username });
+    });
   }
 };
 
 var handlers = {
   setup: function() {
     handlers.register();
-    handlers.login();    
+    handlers.login();
+    handlers.create_coupon();    
   },
 
   login: function() {
@@ -146,7 +165,27 @@ var handlers = {
   
   view_profile: function() {
   
-  },  
+  },
+  
+  create_coupon: function() {
+    $('#create-coupon').submit(function(ev) {
+      ev.preventDefault();
+      
+      var name = $('#create-coupon .couponname').val(),
+      	  description = $('#create-coupon .description').val(),
+      	  logo_url = $('#create-coupon .image_url').val(),
+      	  amount = $('#create-coupon .amoung').val(),
+      	  price = $('#create-coupon .price').val(),
+      	  coupontype = $('#create-coupon .coupontype').val(),
+      	  expirydate = $("#datepicker").val();
+      
+      app.create_coupon(name, description, logo_url, amount, price, coupontype, expirydate, function(result) {
+        alert('Coupon Created');
+        document.location.href = 'index.html';
+      });
+      
+    });
+  }  
 };
 
 jQuery(function() {
