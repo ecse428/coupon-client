@@ -110,9 +110,9 @@ var app = {
 
 var handlers = {
   setup: function() {
-    handlers.login();
-    handlers.create_coupon();   
-    handlers.register(); 
+    handlers.register();
+    handlers.login(); 
+    handlers.create_coupon();    
   },
 
   login: function() {
@@ -129,7 +129,7 @@ var handlers = {
   
   register: function() {
     
-    $("#register").validate({
+    $("#register").validate({      
       rules: {
         username: "required",
         password: "required",
@@ -138,12 +138,14 @@ var handlers = {
           email: true
         }
       },
+      onfocusout: false,
+      onkeyup: false
+    });
       
-      submitHandler: function (form) {
-        $(form).submit(function(ev) {
-          ev.preventDefault();
-          app.setAddress();
-      
+    $("#register").submit(function(ev) {          
+      ev.preventDefault();
+      if ($("#register").valid()) {     
+          app.setAddress();          
           var username = $('#register .username').val(),
               password = $('#register .password').val(),
           	  email = $('#register .email').val(),
@@ -161,7 +163,8 @@ var handlers = {
             alert('Registration Successful');
             document.location.href = 'index.html';
           });
-        });
+      } else {
+        return false;
       }
     });    
   },
@@ -178,10 +181,14 @@ var handlers = {
 		couponimage: "required",
 		image_url: "required"
       },
+      onfocusout: false,
+      onkeyup: false
+    });   
        
-      submitHandler: function (form) {
-        $(form).submit(function(ev) {
-          ev.preventDefault();
+    $('#create-coupon').submit(function(ev) {
+      ev.preventDefault();
+      
+      if ($("#create-coupon").valid()) {
       
           var name = $('#create-coupon .couponname').val(),
       	      description = $('#create-coupon .description').val(),
@@ -194,8 +201,9 @@ var handlers = {
           app.create_coupon(name, description, logo_url, useramountlimit, price, coupontype, expirydate, function(result) {
             alert('Coupon Created');
             document.location.href = 'index.html';
-          });      
-        });              
+          });
+      } else {
+        return false;
       }
     });
   }  
