@@ -34,7 +34,8 @@ var app = {
 
     app.api('/login', 'POST', data, function(result) {
       if (result.error) {
-        alert('Error logging in');
+        var r = jQuery.parseJSON(result.error.responseText);
+        alert("Error: " + r.error);
         return;
       }
 
@@ -59,7 +60,8 @@ var app = {
     			 accounttype: accounttype};
     app.api('/users', 'POST', data, function(result) {
       if (result.error) {
-        alert(JSON.stringify(result.error.responseText));
+        var r = jQuery.parseJSON(result.error.responseText);
+        alert("Error: " + r.error);
         return;
       }
       
@@ -109,7 +111,8 @@ var app = {
     			 expirydate: expirydate };
     app.api('/coupons', 'POST', data, function(result) {
       if (result.error) {
-        alert(JSON.stringify(result.error.responseText));
+        var r = jQuery.parseJSON(result.error.responseText);
+        alert("Error: " + r.error);
         return;
       }
       
