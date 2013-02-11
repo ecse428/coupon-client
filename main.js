@@ -46,7 +46,7 @@ var app = {
   },
   
   register: function(username, password, email, firstname, lastname, address, phonenumber, 
-  					 creditnumber, expirymonth, expiryyear, paypal, accounttype, cb) {
+  					 creditcardnumber, creditcardexpirydate, paypalaccountname, accounttype, cb) {
     var data = { username: username,
     			 password: password,
     			 email: email,
@@ -54,9 +54,9 @@ var app = {
     			 lastname: lastname,
     			 address: address,
     			 phonenumber: phonenumber,
-    			 expirymonth: expirymonth,
-    			 expiryyear: expiryyear,
-    			 paypal: paypal,
+    			 creditcardnumber: creditcardnumber,
+    			 creditcardexpirydate: creditcardexpirydate,
+    			 paypalaccountname: paypalaccountname,
     			 accounttype: accounttype};
     app.api('/users', 'POST', data, function(result) {
       if (result.error) {
@@ -84,28 +84,15 @@ var app = {
     document.getElementById("address").value=address;
   },
   
-  register_validation: function() {
-    $("#register").validate({
-      rules: {
-        username: "required",
-        password: "required",
-        email: {
-          required: true,
-          email: true
-        }
-      }      
-    });
-  },
-  
   date_pick: function() {
     $("#datepicker").datepicker();
   },
   
-  create_coupon: function(name, description, logo_url, amount, price, coupontype, expirydate, cb) {
+  create_coupon: function(name, description, logo_url, useramountlimit, price, coupontype, expirydate, cb) {
     var data = { name: name,
     			 description: description,
     			 logo_url: logo_url,
-    			 amount: amount,
+    			 useramountlimit: useramountlimit,
     			 price: price,
     			 coupontype: coupontype,
     			 expirydate: expirydate };
@@ -123,9 +110,9 @@ var app = {
 
 var handlers = {
   setup: function() {
-    handlers.register();
     handlers.login();
-    handlers.create_coupon();    
+    handlers.create_coupon();   
+    handlers.register(); 
   },
 
   login: function() {
@@ -141,29 +128,42 @@ var handlers = {
   },
   
   register: function() {
-    $('#register').submit(function(ev) {
-      ev.preventDefault();
-      app.setAddress();
+    
+    $("#register").validate({
+      rules: {
+        username: "required",
+        password: "required",
+        email: {
+          required: true,
+          email: true
+        }
+      },
       
-      var username = $('#register .username').val(),
-          password = $('#register .password').val(),
-          email = $('#register .email').val(),
-          firstname = $('#register .firstname').val(),
-          lastname = $('#register .lastname').val(),
-          address = $('#register #address').val(),
-          phonenumber = $('#register .phonenumber').val(),
-          creditnumber = $('#register .creditnumber').val(),
-          expirymonth = $('#register .expirymonth').val(),
-          expiryyear = $('#register .expiryyear').val(),
-          paypal = $('#register .paypal').val(),
-          accounttype = $('form input[type=radio]:checked').val();                    
+      submitHandler: function (form) {
+        $(form).submit(function(ev) {
+          ev.preventDefault();
+          app.setAddress();
+      
+          var username = $('#register .username').val(),
+              password = $('#register .password').val(),
+          	  email = $('#register .email').val(),
+          	  firstname = $('#register .firstname').val(),
+          	  lastname = $('#register .lastname').val(),
+          	  address = $('#register #address').val(),
+          	  phonenumber = $('#register .phonenumber').val(),
+          	  creditcardnumber = $('#register .creditnumber').val(),
+              creditcardexpirydate = $('#register .expiryyear').val() + '-' + $('#register .expirymonth').val() + '-01', //Default and quick fix
+              paypalaccountname = $('#register .paypal').val(),
+              accounttype = $('form input[type=radio]:checked').val();                    
           
-      app.register(username, password, email, firstname, lastname, address, phonenumber,
-      			   creditnumber, expirymonth, expiryyear, paypal, accounttype, function(result) {
-        alert('Registration Successful');
-        document.location.href = 'index.html';
-      });
-    });
+          app.register(username, password, email, firstname, lastname, address, phonenumber,
+      			   creditcardnumber, creditcardexpirydate, paypalaccountname, accounttype, function(result) {
+            alert('Registration Successful');
+            document.location.href = 'index.html';
+          });
+        });
+      }
+    });    
   },
   
   view_profile: function() {
@@ -171,22 +171,32 @@ var handlers = {
   },
   
   create_coupon: function() {
-    $('#create-coupon').submit(function(ev) {
-      ev.preventDefault();
+    $("#create-coupon").validate({
+      rules: {
+        couponname: "required",
+        description: "required",
+		couponimage: "required",
+		image_url: "required"
+      },
+       
+      submitHandler: function (form) {
+        $(form).submit(function(ev) {
+          ev.preventDefault();
       
-      var name = $('#create-coupon .couponname').val(),
-      	  description = $('#create-coupon .description').val(),
-      	  logo_url = $('#create-coupon .image_url').val(),
-      	  amount = $('#create-coupon .amoung').val(),
-      	  price = $('#create-coupon .price').val(),
-      	  coupontype = $('#create-coupon .coupontype').val(),
-      	  expirydate = $("#datepicker").val();
+          var name = $('#create-coupon .couponname').val(),
+      	      description = $('#create-coupon .description').val(),
+              logo_url = $('#create-coupon .image_url').val(),
+      	      useramountlimit = $('#create-coupon .amount').val(),
+      	      price = $('#create-coupon .price').val(),
+      	      coupontype = $('#create-coupon .coupontype').val(),
+      	      expirydate = $("#datepicker").val();
       
-      app.create_coupon(name, description, logo_url, amount, price, coupontype, expirydate, function(result) {
-        alert('Coupon Created');
-        document.location.href = 'index.html';
-      });
-      
+          app.create_coupon(name, description, logo_url, useramountlimit, price, coupontype, expirydate, function(result) {
+            alert('Coupon Created');
+            document.location.href = 'index.html';
+          });      
+        });              
+      }
     });
   }  
 };
@@ -195,5 +205,4 @@ jQuery(function() {
   handlers.setup();
   app.init();
   app.register_number_only();
-  app.register_validation();
 });

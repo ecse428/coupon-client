@@ -11,3 +11,5 @@ div {
   margin: 10px;
   /*padding-bottom: 6px;*/
   clear: both;}
+  
+label.error { float: none; color: red; padding-left: .5em; }
