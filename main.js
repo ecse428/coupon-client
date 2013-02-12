@@ -44,6 +44,17 @@ var app = {
       cb({ username: result.username });
     });
   },
+  registerForm: function(cb){
+    app.api('/form/register', 'POST', function(result){
+      if (result.error) {
+        var r = jQuery.parseJSON(result.error.responseText);
+        alert("Error: " + r.error);
+        return;
+      }
+      
+      cb({ tmpl: result.tmpl });
+    });
+  },
   
   register: function(username, password, email, firstname, lastname, address, phonenumber, 
   					 creditcardnumber, creditcardexpirydate, paypalaccountname, accounttype, cb) {
@@ -110,9 +121,10 @@ var app = {
 
 var handlers = {
   setup: function() {
+    handlers.loadRegisterForm();
     handlers.register();
     handlers.login(); 
-    handlers.create_coupon();    
+    handlers.create_coupon();  
   },
 
   login: function() {
@@ -126,9 +138,18 @@ var handlers = {
       });
     });
   },
-  
-  register: function() {
+  loadRegisterForm : function(){
+    $('#registerTrigger').click(function(e){
+      e.preventDefault();
+      
+      app.registerForm(function(result){
+	$('#contentStack .contentHolder').html(result.tmpl);
+      });
+    });
     
+  },
+  register: function() {
+
     $("#register").validate({      
       rules: {
         username: "required",
@@ -142,9 +163,11 @@ var handlers = {
       onkeyup: false
     });
       
-    $("#register").submit(function(ev) {          
-      ev.preventDefault();
-      if ($("#register").valid()) {     
+    $('#contentStack').on('click', '#submitRegistration', function(e){
+      e.preventDefault();
+      
+      if ($("#register").valid()) {
+	  
           app.setAddress();          
           var username = $('#register .username').val(),
               password = $('#register .password').val(),
@@ -161,12 +184,10 @@ var handlers = {
           app.register(username, password, email, firstname, lastname, address, phonenumber,
       			   creditcardnumber, creditcardexpirydate, paypalaccountname, accounttype, function(result) {
             alert('Registration Successful');
-            document.location.href = 'index.html';
+	    window.location = '/profile';
           });
-      } else {
-        return false;
       }
-    });    
+    }); 
   },
   
   view_profile: function() {
@@ -174,38 +195,38 @@ var handlers = {
   },
   
   create_coupon: function() {
-    $("#create-coupon").validate({
-      rules: {
-        couponname: "required",
-        description: "required",
-		couponimage: "required",
-		image_url: "required"
-      },
-      onfocusout: false,
-      onkeyup: false
-    });   
-       
-    $('#create-coupon').submit(function(ev) {
-      ev.preventDefault();
-      
-      if ($("#create-coupon").valid()) {
-      
-          var name = $('#create-coupon .couponname').val(),
-      	      description = $('#create-coupon .description').val(),
-              logo_url = $('#create-coupon .image_url').val(),
-      	      useramountlimit = $('#create-coupon .amount').val(),
-      	      price = $('#create-coupon .price').val(),
-      	      coupontype = $('#create-coupon .coupontype').val(),
-      	      expirydate = $("#datepicker").val();
-      
-          app.create_coupon(name, description, logo_url, useramountlimit, price, coupontype, expirydate, function(result) {
-            alert('Coupon Created');
-            document.location.href = 'index.html';
-          });
-      } else {
-        return false;
-      }
-    });
+//     $("#create-coupon").validate({
+//       rules: {
+//         couponname: "required",
+//         description: "required",
+// 		couponimage: "required",
+// 		image_url: "required"
+//       },
+//       onfocusout: false,
+//       onkeyup: false
+//     });   
+//        
+//     $('#create-coupon').submit(function(ev) {
+//       ev.preventDefault();
+//       
+//       if ($("#create-coupon").valid()) {
+//       
+//           var name = $('#create-coupon .couponname').val(),
+//       	      description = $('#create-coupon .description').val(),
+//               logo_url = $('#create-coupon .image_url').val(),
+//       	      useramountlimit = $('#create-coupon .amount').val(),
+//       	      price = $('#create-coupon .price').val(),
+//       	      coupontype = $('#create-coupon .coupontype').val(),
+//       	      expirydate = $("#datepicker").val();
+//       
+//           app.create_coupon(name, description, logo_url, useramountlimit, price, coupontype, expirydate, function(result) {
+//             alert('Coupon Created');
+//             document.location.href = 'index.html';
+//           });
+//       } else {
+//         return false;
+//       }
+//     });
   }  
 };
 
