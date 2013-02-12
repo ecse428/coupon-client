@@ -44,6 +44,7 @@ a {
 	position:fixed;
 	top:0;
 	left:0;
+	z-index:100;
 	
 	.header{
 		margin:0px auto;
@@ -83,6 +84,23 @@ a {
 .contentContainer {
 	padding:8px 10px;
 	margin-top:50px;
+	.nav-container {
+		position:fixed;
+		top:0;
+		left:0;
+		width:30%;
+		background:#fff;
+		height:100%;
+		z-index:99;
+		
+		.contentHolder {
+			margin:50px 10px;
+			a {
+				color:#143352;
+			}
+		}
+	}
+	
 }
 
 .footerContainer {
@@ -92,6 +110,7 @@ a {
 	position:fixed;
 	bottom:0;
 	left:0;
+	z-index:100;
 	font-size:small;
 	
 	.footer {
@@ -111,3 +130,4 @@ a {
 		}
 	}
 }
+
