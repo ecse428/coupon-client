@@ -53,18 +53,6 @@ var app = {
       cb({id: result.id, name: result.username});
     });
   },
-  registerForm: function(cb){
-    app.api('/ui/register', 'POST', function(result){
-      if (result.error) {
-        var r = jQuery.parseJSON(result.error.responseText);
-        alert("Error: " + r.error);
-        return;
-      }
-      
-      cb({ tmpl: result.tmpl });
-    });
-  },
-  
   register: function(data, cb){
 	  app.api('/users', 'POST', data, function(result){
 			
@@ -117,8 +105,7 @@ var app = {
 	  app.api('/ui/' + app.localStatus.controllerView, 'POST', function(result){
 		  
 		  if (result.error) {
-			//var r = jQuery.parseJSON(result.error.responseText);
-			alert("Error: ");
+			alert("Error: " + jQuery.parseJSON(result.error.responseText).error);
 			return;
 		  }
 		  
@@ -139,8 +126,19 @@ var app = {
   date_pick: function() {
     $("#datepicker").datepicker();
   },
-  
-  create_coupon: function(name, description, logo_url, useramountlimit, price, coupontype, expirydate, cb) {
+  createCoupon: function(data, cb){
+	  app.api('/coupons', 'POST', data, function(result){
+		  if (result.error) {
+				var r = jQuery.parseJSON(result.error.responseText);
+				alert("Error: " + r.error);
+				return;
+		  }
+		  
+		  cb({status: result.status});
+	  });
+  }
+  /*
+  createCoupon: function(name, description, logo_url, useramountlimit, price, coupontype, expirydate, cb) {
     var data = { name: name,
     			 description: description,
     			 logo_url: logo_url,
@@ -158,6 +156,7 @@ var app = {
       cb({ username: result.username });
     });
   }
+  * */
 };
 
 var handlers = {
@@ -168,7 +167,7 @@ var handlers = {
     handlers.loadProfileView();
     handlers.register();
     handlers.login(); 
-    handlers.create_coupon();
+    handlers.createCoupon();
     handlers.renderPage();
   },
 
@@ -193,16 +192,6 @@ var handlers = {
 		  handlers.renderPage();
       });
     });
-  },
-  loginStatus: function(){
-	  if ($.cookie('user_key') && $.cookie('key')){
-		app.localStatus.authenticated = true;
-	  }
-	  
-	  
-	  if (app.localStatus.authenticated){
-		  
-	  }
   },
   renderPage: function(){
 	  app.getUITemplate(function(result){
@@ -231,7 +220,6 @@ var handlers = {
 		  app.localStatus.controllerView = 'profile';
 		  handlers.renderPage();
 	  }
-      
     });
   },
   loadIndexView : function(){
@@ -242,7 +230,6 @@ var handlers = {
 		  app.localStatus.controllerView = 'index';
 		  handlers.renderPage();
 	  }
-      
     });
   },
   loadCreateCouponView: function(){
@@ -264,35 +251,21 @@ var handlers = {
       
       $form.validate({      
 	    rules: {
-		  username: {
-				  required: true
-		  },
-		  password: {
-				  required: true
-		  },
-		  email: {
-				  required: true,
-				  email:true
-		  }
+		  username: { required: true },
+		  password: { required: true },
+		  email: { required: true, email:true }
 	    },
 	    messages: {
-		  username : {
-				  required: 'User name is required'
-		  },
-		  password: {
-				  required: 'Password is required'
-		  },
-		  email: {
-				  required: 'Email is required',
-				  email: 'A valid email is required'
-		  }
+		  username : { required: 'User name is required' },
+		  password: { required: 'Password is required' },
+		  email: { required: 'Email is required', email: 'A valid email is required' }
 	    }
       });
       
       if ($form.valid()) {		
 			app.register($form.serializeObject(), function(result){
 				alert('Registration Successful');
-				window.location = '/profile';
+				window.location = '/';
 			});
 		/*
           app.setAddress();          
@@ -317,23 +290,38 @@ var handlers = {
       }
     }); 
   },
-  
   view_profile: function() {
   
   },
   
-  create_coupon: function() {
-     $("#create-coupon").validate({
-       rules: {
-         couponname: "required",
-         description: "required",
- 		couponimage: "required",
- 		image_url: "required"
-       },
-       onfocusout: false,
-       onkeyup: false
-     });   
-        
+  createCoupon: function() {
+	  $('#contentStack').on('click', '#submitCreateCoupon', function(e){
+		  e.preventDefault();
+		  
+		  var $form = $("#contentStack #createCoupon");
+		  
+		  $form.validate({
+			   rules: {
+				   couponname: {required: true},
+				   description: {required: true},
+				   image_url: {required: true}
+			   },
+			   messages: {
+				   couponname: {required: 'Coupon\'s name is required'},
+				   description: {required: 'Description is required'},
+				   image_url: {required: 'URL cannot be empty'}
+			   }
+		  });
+		  
+		  if ($form.valid()){
+			  app.createCoupon($form.serializeObject(), function(result){
+				  alert(result.status);
+				  app.localStatus.controllerView = 'profile';
+				  handlers.renderPage();
+			  });
+		  }
+	  });
+       /*
      $('#create-coupon').submit(function(ev) {
        ev.preventDefault();
        
@@ -355,6 +343,7 @@ var handlers = {
          return false;
        }
      });
+     */ 
   }  
 };
 
