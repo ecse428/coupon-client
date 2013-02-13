@@ -6,7 +6,7 @@ var app = {
 		id: 0,
 		name: 'Visitor'
 	},
-	controllerView: 'index' // index, profile, register
+	controllerView: 'index' // index, profile, register, createcoupon
   },
   init: function() {
     $.getJSON('/api', function(res) {
@@ -163,6 +163,9 @@ var app = {
 var handlers = {
   setup: function() {
     handlers.loadRegisterView();
+    handlers.loadIndexView();
+    handlers.loadCreateCouponView();
+    handlers.loadProfileView();
     handlers.register();
     handlers.login(); 
     handlers.create_coupon();
@@ -219,6 +222,39 @@ var handlers = {
 	  }
       
     });
+  },
+  loadProfileView : function(){
+    $('#navContainer').on('click','#profileTrigger', function(e){
+      e.preventDefault();
+      
+      if (app.localStatus.controllerView != 'profile'){
+		  app.localStatus.controllerView = 'profile';
+		  handlers.renderPage();
+	  }
+      
+    });
+  },
+  loadIndexView : function(){
+    $('#indexTrigger').click(function(e){
+      e.preventDefault();
+      
+      if (app.localStatus.controllerView != 'index'){
+		  app.localStatus.controllerView = 'index';
+		  handlers.renderPage();
+	  }
+      
+    });
+  },
+  loadCreateCouponView: function(){
+	  $('#navContainer').on('click','#couponCreateTrigger', function(e){
+		  e.preventDefault();
+		  
+		  if (app.localStatus.controllerView != 'createcoupon'){
+			  app.localStatus.controllerView = 'createcoupon';
+			  handlers.renderPage();
+			  
+		  }
+	  });
   },
   register: function() {
     $('#contentStack').on('click', '#submitRegistration', function(e){
