@@ -55,7 +55,21 @@ var app = {
       cb({ tmpl: result.tmpl });
     });
   },
-  
+  /*
+  register: function(data, cb){
+	  app.api('/users', 'POST', data, function(result){
+			if (result.error) {
+				var r = jQuery.parseJSON(result.error.responseText);
+				alert("Error: " + r.error);
+				return;
+			}
+			
+			cb({ username: result.username });
+		  
+	  });
+	  
+  },
+  */
   register: function(username, password, email, firstname, lastname, address, phonenumber, 
   					 creditcardnumber, creditcardexpirydate, paypalaccountname, accounttype, cb) {
     var data = { username: username,
@@ -152,40 +166,62 @@ var handlers = {
 
     $("#register").validate({      
       rules: {
-        username: "required",
-        password: "required",
-        email: {
-          required: true,
-          email: true
-        }
+			username: {
+					required: true
+			},
+			password: {
+					required: true
+			},
+			email: {
+					required: true,
+					email:true
+			}
       },
-      onfocusout: false,
-      onkeyup: false
+      messages: {
+			username : {
+					required: 'User name is required'
+			},
+			password: {
+					required: 'Password is required'
+			},
+			email: {
+					required: 'Email is required',
+					email: 'A valid email is required'
+			}
+	  }
     });
       
     $('#contentStack').on('click', '#submitRegistration', function(e){
       e.preventDefault();
       
-      if ($("#register").valid()) {
-	  
+      var $form = $("#contentStack #register");
+      
+      if ($form.valid()) {
+			
+			app.register($form.serializeObject(), function(result){
+				alert('Registration Successful');
+				window.location = '/profile';
+			});
+		/*
           app.setAddress();          
-          var username = $('#register .username').val(),
-              password = $('#register .password').val(),
-          	  email = $('#register .email').val(),
-          	  firstname = $('#register .firstname').val(),
-          	  lastname = $('#register .lastname').val(),
-          	  address = $('#register #address').val(),
-          	  phonenumber = $('#register .phonenumber').val(),
-          	  creditcardnumber = $('#register .creditnumber').val(),
-              creditcardexpirydate = $('#register .expiryyear').val() + '-' + $('#register .expirymonth').val() + '-01', //Default and quick fix
+          var username = $form.find('.username').val(),
+              password = $form.find('.password').val(),
+          	  email = $form.find('.email').val(),
+          	  firstname = $$form.find('.firstname').val(),
+          	  lastname = $form.find('.lastname').val(),
+          	  address = $$form.find('#address').val(),
+          	  phonenumber = $form.find('.phonenumber').val(),
+          	  creditcardnumber = $form.find('.creditnumber').val(),
+              creditcardexpirydate = $form.find('.expiryyear').val() + '-' + $('#register .expirymonth').val() + '-01', //Default and quick fix
               paypalaccountname = $('#register .paypal').val(),
               accounttype = $('form input[type=radio]:checked').val();                    
           
           app.register(username, password, email, firstname, lastname, address, phonenumber,
       			   creditcardnumber, creditcardexpirydate, paypalaccountname, accounttype, function(result) {
             alert('Registration Successful');
-	    window.location = '/profile';
+			window.location = '/profile';
           });
+         */
       }
     }); 
   },
@@ -195,38 +231,38 @@ var handlers = {
   },
   
   create_coupon: function() {
-//     $("#create-coupon").validate({
-//       rules: {
-//         couponname: "required",
-//         description: "required",
-// 		couponimage: "required",
-// 		image_url: "required"
-//       },
-//       onfocusout: false,
-//       onkeyup: false
-//     });   
-//        
-//     $('#create-coupon').submit(function(ev) {
-//       ev.preventDefault();
-//       
-//       if ($("#create-coupon").valid()) {
-//       
-//           var name = $('#create-coupon .couponname').val(),
-//       	      description = $('#create-coupon .description').val(),
-//               logo_url = $('#create-coupon .image_url').val(),
-//       	      useramountlimit = $('#create-coupon .amount').val(),
-//       	      price = $('#create-coupon .price').val(),
-//       	      coupontype = $('#create-coupon .coupontype').val(),
-//       	      expirydate = $("#datepicker").val();
-//       
-//           app.create_coupon(name, description, logo_url, useramountlimit, price, coupontype, expirydate, function(result) {
-//             alert('Coupon Created');
-//             document.location.href = 'index.html';
-//           });
-//       } else {
-//         return false;
-//       }
-//     });
+     $("#create-coupon").validate({
+       rules: {
+         couponname: "required",
+         description: "required",
+ 		couponimage: "required",
+ 		image_url: "required"
+       },
+       onfocusout: false,
+       onkeyup: false
+     });   
+        
+     $('#create-coupon').submit(function(ev) {
+       ev.preventDefault();
+       
+       if ($("#create-coupon").valid()) {
+       
+           var name = $('#create-coupon .couponname').val(),
+       	      description = $('#create-coupon .description').val(),
+               logo_url = $('#create-coupon .image_url').val(),
+       	      useramountlimit = $('#create-coupon .amount').val(),
+      	      price = $('#create-coupon .price').val(),
+       	      coupontype = $('#create-coupon .coupontype').val(),
+       	      expirydate = $("#datepicker").val();
+       
+           app.create_coupon(name, description, logo_url, useramountlimit, price, coupontype, expirydate, function(result) {
+             alert('Coupon Created');
+             document.location.href = 'index.html';
+          });
+       } else {
+         return false;
+       }
+     });
   }  
 };
 
