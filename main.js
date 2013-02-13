@@ -55,7 +55,7 @@ var app = {
       cb({ tmpl: result.tmpl });
     });
   },
-  /*
+  
   register: function(data, cb){
 	  app.api('/users', 'POST', data, function(result){
 			if (result.error) {
@@ -69,7 +69,7 @@ var app = {
 	  });
 	  
   },
-  */
+ /*
   register: function(username, password, email, firstname, lastname, address, phonenumber, 
   					 creditcardnumber, creditcardexpirydate, paypalaccountname, accounttype, cb) {
     var data = { username: username,
@@ -94,7 +94,7 @@ var app = {
     });
   },
   
-  
+   */
   register_number_only: function() {
     $('.creditnumber').numeric();
     $('.phonenumber').numeric();
@@ -164,37 +164,39 @@ var handlers = {
   },
   register: function() {
 
-    $("#register").validate({      
-      rules: {
-			username: {
-					required: true
-			},
-			password: {
-					required: true
-			},
-			email: {
-					required: true,
-					email:true
-			}
-      },
-      messages: {
-			username : {
-					required: 'User name is required'
-			},
-			password: {
-					required: 'Password is required'
-			},
-			email: {
-					required: 'Email is required',
-					email: 'A valid email is required'
-			}
-	  }
-    });
+    
       
     $('#contentStack').on('click', '#submitRegistration', function(e){
       e.preventDefault();
       
       var $form = $("#contentStack #register");
+      
+      $form.validate({      
+	    rules: {
+			      username: {
+					      required: true
+			      },
+			      password: {
+					      required: true
+			      },
+			      email: {
+					      required: true,
+					      email:true
+			      }
+	    },
+	    messages: {
+			      username : {
+					      required: 'User name is required'
+			      },
+			      password: {
+					      required: 'Password is required'
+			      },
+			      email: {
+					      required: 'Email is required',
+					      email: 'A valid email is required'
+			      }
+	    }
+      });
       
       if ($form.valid()) {
 			
