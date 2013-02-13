@@ -1,4 +1,13 @@
 var app = {
+  localStatus: {
+	authenticated: false,
+	user: {
+		type: 'visitor', // visitor or logged
+		id: 0,
+		name: 'Visitor'
+	},
+	controllerView: 'index' // index, profile, register
+  },
   init: function() {
     $.getJSON('/api', function(res) {
       if (res && res.status == 'OK') {
@@ -28,7 +37,6 @@ var app = {
       cb({ error: err.error() });
     });
   },
-
   login: function(username, password, cb) {
     var data = { username: username, password: password };
 
@@ -41,11 +49,12 @@ var app = {
 
       $.cookie('user_key', result.user_key);
       $.cookie('key', result.key);
-      cb({ username: result.username });
+      
+      cb({id: result.id, name: result.username});
     });
   },
   registerForm: function(cb){
-    app.api('/form/register', 'POST', function(result){
+    app.api('/ui/register', 'POST', function(result){
       if (result.error) {
         var r = jQuery.parseJSON(result.error.responseText);
         alert("Error: " + r.error);
@@ -58,9 +67,10 @@ var app = {
   
   register: function(data, cb){
 	  app.api('/users', 'POST', data, function(result){
+			
 			if (result.error) {
-				var r = jQuery.parseJSON(result.error.responseText);
-				alert("Error: " + r.error);
+				//var r = jQuery.parseJSON(result.error.responseText);
+				alert("Error: "/* + r.error*/);
 				return;
 			}
 			
@@ -99,6 +109,23 @@ var app = {
     $('.creditnumber').numeric();
     $('.phonenumber').numeric();
   },
+  getUITemplate: function(cb){
+	  if (app.localStatus.controllerView == undefined){
+		  app.localStatus.controllerView = 'index';
+	  }
+	  
+	  app.api('/ui/' + app.localStatus.controllerView, 'POST', function(result){
+		  
+		  if (result.error) {
+			//var r = jQuery.parseJSON(result.error.responseText);
+			alert("Error: ");
+			return;
+		  }
+		  
+		  cb({ tmpl: result.tmpl });
+		  
+	  });
+  },
   
   setAddress: function() {
 	var address = "";
@@ -135,10 +162,11 @@ var app = {
 
 var handlers = {
   setup: function() {
-    handlers.loadRegisterForm();
+    handlers.loadRegisterView();
     handlers.register();
     handlers.login(); 
-    handlers.create_coupon();  
+    handlers.create_coupon();
+    handlers.renderPage();
   },
 
   login: function() {
@@ -148,24 +176,51 @@ var handlers = {
           password = $('#login .password').val();
 
       app.login(username, password, function(result) {
-        $('#login').parent().html('<p>Welcome ' + result.username + '</p>');
+		  
+		  app.localStatus.authenticated = true;
+		  app.localStatus.user = {
+			  type:'logged',
+			  id: result.id,
+			  name: result.name
+		  };
+		  
+		  app.localStatus.controllerView = 'profile';
+		  $('#login').parent().html('<p>Welcome ' + app.localStatus.user.name + '</p>');
+		  
+		  handlers.renderPage();
       });
     });
   },
-  loadRegisterForm : function(){
-    $('#registerTrigger').click(function(e){
+  loginStatus: function(){
+	  if ($.cookie('user_key') && $.cookie('key')){
+		app.localStatus.authenticated = true;
+	  }
+	  
+	  
+	  if (app.localStatus.authenticated){
+		  
+	  }
+  },
+  renderPage: function(){
+	  app.getUITemplate(function(result){
+		  // load register form into right hand side #contentStack
+		  $('#contentStack .contentHolder').html(result.tmpl.content);
+		  // load navigation panel into left hand side #navContainer
+		  $('#navContainer .contentHolder').html(result.tmpl.nav);
+	  });
+  }, 
+  loadRegisterView : function(){
+    $('#navContainer').on('click','#registerTrigger', function(e){
       e.preventDefault();
       
-      app.registerForm(function(result){
-	$('#contentStack .contentHolder').html(result.tmpl);
-      });
+      if (app.localStatus.controllerView != 'register'){
+		  app.localStatus.controllerView = 'register';
+		  handlers.renderPage();
+	  }
+      
     });
-    
   },
   register: function() {
-
-    
-      
     $('#contentStack').on('click', '#submitRegistration', function(e){
       e.preventDefault();
       
@@ -173,33 +228,32 @@ var handlers = {
       
       $form.validate({      
 	    rules: {
-			      username: {
-					      required: true
-			      },
-			      password: {
-					      required: true
-			      },
-			      email: {
-					      required: true,
-					      email:true
-			      }
+		  username: {
+				  required: true
+		  },
+		  password: {
+				  required: true
+		  },
+		  email: {
+				  required: true,
+				  email:true
+		  }
 	    },
 	    messages: {
-			      username : {
-					      required: 'User name is required'
-			      },
-			      password: {
-					      required: 'Password is required'
-			      },
-			      email: {
-					      required: 'Email is required',
-					      email: 'A valid email is required'
-			      }
+		  username : {
+				  required: 'User name is required'
+		  },
+		  password: {
+				  required: 'Password is required'
+		  },
+		  email: {
+				  required: 'Email is required',
+				  email: 'A valid email is required'
+		  }
 	    }
       });
       
-      if ($form.valid()) {
-			
+      if ($form.valid()) {		
 			app.register($form.serializeObject(), function(result){
 				alert('Registration Successful');
 				window.location = '/profile';
