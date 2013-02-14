@@ -42,8 +42,7 @@ var app = {
 
     app.api('/login', 'POST', data, function(result) {
       if (result.error) {
-        var r = jQuery.parseJSON(result.error.responseText);
-        alert("Error: " + r.error);
+        alert("Error: ");
         return;
       }
 
@@ -105,7 +104,7 @@ var app = {
 	  app.api('/ui/' + app.localStatus.controllerView, 'POST', function(result){
 		  
 		  if (result.error) {
-			alert("Error: " + jQuery.parseJSON(result.error.responseText).error);
+			alert("Error: ");
 			return;
 		  }
 		  
@@ -129,8 +128,8 @@ var app = {
   createCoupon: function(data, cb){
 	  app.api('/coupons', 'POST', data, function(result){
 		  if (result.error) {
-				var r = jQuery.parseJSON(result.error.responseText);
-				alert("Error: " + r.error);
+				
+				alert("Error: ");
 				return;
 		  }
 		  
@@ -165,6 +164,7 @@ var handlers = {
     handlers.loadIndexView();
     handlers.loadCreateCouponView();
     handlers.loadProfileView();
+    handlers.loadEditProfileView();
     handlers.register();
     handlers.login(); 
     handlers.createCoupon();
@@ -187,7 +187,7 @@ var handlers = {
 		  };
 		  
 		  app.localStatus.controllerView = 'profile';
-		  $('#login').parent().html('<p>Welcome ' + app.localStatus.user.name + '</p>');
+		  $('#login').parent().html('<p class="goToProfile"><img src="/imgs/head.png"/> ' + app.localStatus.user.name + '</p>');
 		  
 		  handlers.renderPage();
       });
@@ -222,14 +222,28 @@ var handlers = {
 	  }
     });
   },
+  loadEditProfileView : function(){
+    $('#navContainer').on('click','#editProfileTrigger', function(e){
+      e.preventDefault();
+      
+      if (app.localStatus.controllerView != 'editprofile'){
+		  app.localStatus.controllerView = 'editprofile';
+		  handlers.renderPage();
+	  }
+    });
+  },
   loadIndexView : function(){
     $('#indexTrigger').click(function(e){
       e.preventDefault();
       
-      if (app.localStatus.controllerView != 'index'){
+      if (app.localStatus.user.type == 'logged'){
+		  app.localStatus.controllerView = 'profile';
+		  
+	  }else if (app.localStatus.controllerView != 'index'){
 		  app.localStatus.controllerView = 'index';
-		  handlers.renderPage();
 	  }
+	  
+	  handlers.renderPage();
     });
   },
   loadCreateCouponView: function(){
@@ -295,6 +309,10 @@ var handlers = {
   },
   
   createCoupon: function() {
+	  $('#contentStack').on('click', '#datepicker', function(e){
+		  $(this).datepicker();
+	  });
+	  
 	  $('#contentStack').on('click', '#submitCreateCoupon', function(e){
 		  e.preventDefault();
 		  
