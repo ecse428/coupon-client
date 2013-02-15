@@ -1,17 +1,20 @@
 var app = {
   localStatus: {
-	authenticated: false,
-	user: {
-		type: 'visitor', // visitor or logged
-		id: 0,
-		name: 'Visitor'
-	},
-	controllerView: 'index' // index, profile, register, createcoupon
+    authenticated: false,
+    user: {
+      type: 'visitor', // visitor or logged
+      id: 0,
+      name: 'Visitor'
+    },
+
+    controllerView: 'guest' // index, profile, register, createcoupon
   },
+
   init: function() {
-    $.getJSON('/api', function(res) {
-      if (res && res.status == 'OK') {
-        $('.container').text('CONNECTED TO THE API');
+    app.setUpNumerics();
+    app.api('/login/test', function(result) {
+      if (result.status) {
+        app.setUpLoggedIn(result.username, result.user_id);
       }
     });
   },
@@ -22,7 +25,7 @@ var app = {
         cb = args.pop(),
         uri = args.shift(),
         method = args.shift() || 'GET',
-        data = args.shift() || {};
+        data = args.shift();
 
     var req = $.ajax({
       url: '/api' + uri,
@@ -37,125 +40,91 @@ var app = {
       cb({ error: err.error() });
     });
   },
+
+  error: function(err) {
+    alert('Error: ' + err);
+    console.log('Error', err);
+  },
+
   login: function(username, password, cb) {
     var data = { username: username, password: password };
 
     app.api('/login', 'POST', data, function(result) {
-      if (result.error) {
-        alert("Error: ");
-        return;
-      }
+      if (result.error) return app.error(result.error);
 
       $.cookie('user_key', result.user_key);
       $.cookie('key', result.key);
-      
+
       cb({id: result.id, name: result.username});
     });
   },
-  register: function(data, cb){
-	  app.api('/users', 'POST', data, function(result){
-			
-			if (result.error) {
-				//var r = jQuery.parseJSON(result.error.responseText);
-				alert("Error: "/* + r.error*/);
-				return;
-			}
-			
-			cb({ username: result.username });
-		  
-	  });
-	  
+
+  setUpLoggedIn: function(username, id) {
+    app.localStatus.authenticated = true;
+    app.localStatus.user = {
+      type:'logged',
+      id: id,
+      name: username
+    };
+
+    app.localStatus.controllerView = 'index';
+    $('#login').parent().html('<p class="goToProfile"><img src="/imgs/head.png"/> ' + app.localStatus.user.name + '</p>');
+
+    app.renderPage();
   },
- /*
-  register: function(username, password, email, firstname, lastname, address, phonenumber, 
-  					 creditcardnumber, creditcardexpirydate, paypalaccountname, accounttype, cb) {
-    var data = { username: username,
-    			 password: password,
-    			 email: email,
-    			 firstname: firstname,
-    			 lastname: lastname,
-    			 address: address,
-    			 phonenumber: phonenumber,
-    			 creditcardnumber: creditcardnumber,
-    			 creditcardexpirydate: creditcardexpirydate,
-    			 paypalaccountname: paypalaccountname,
-    			 accounttype: accounttype};
-    app.api('/users', 'POST', data, function(result) {
-      if (result.error) {
-        var r = jQuery.parseJSON(result.error.responseText);
-        alert("Error: " + r.error);
-        return;
-      }
-      
+
+  register: function(data, cb){
+    app.api('/users', 'POST', data, function(result){
+      if (result.error) return app.error(result.error);
       cb({ username: result.username });
     });
   },
-  
-   */
-  register_number_only: function() {
+
+  setUpNumerics: function() {
     $('.creditnumber').numeric();
     $('.phonenumber').numeric();
   },
+
   getUITemplate: function(cb){
-	  if (app.localStatus.controllerView == undefined){
-		  app.localStatus.controllerView = 'index';
-	  }
-	  
-	  app.api('/ui/' + app.localStatus.controllerView, 'POST', function(result){
-		  
-		  if (result.error) {
-			alert("Error: ");
-			return;
-		  }
-		  
-		  cb({ tmpl: result.tmpl });
-		  
-	  });
+    if (!app.localStatus.controllerView) {
+      app.localStatus.controllerView = 'index';
+    }
+
+    app.api('/ui/' + app.localStatus.controllerView, function(result){
+      if (result.error) return app.error(result.error);
+      cb({ tmpl: result.tmpl });
+    });
   },
-  
+
   setAddress: function() {
-	var address = "";
+    var address = "";
     $("#address1, #address2, #city, #province, #postalcode").each(function(){
-    	address += $.trim($(this).val()) + " ";
+      address += $.trim($(this).val()) + " ";
     });
 
     document.getElementById("address").value=address;
   },
-  
+
   date_pick: function() {
     $("#datepicker").datepicker();
   },
+
   createCoupon: function(data, cb){
-	  app.api('/coupons', 'POST', data, function(result){
-		  if (result.error) {
-				
-				alert("Error: ");
-				return;
-		  }
-		  
-		  cb({status: result.status});
-	  });
-  }
-  /*
-  createCoupon: function(name, description, logo_url, useramountlimit, price, coupontype, expirydate, cb) {
-    var data = { name: name,
-    			 description: description,
-    			 logo_url: logo_url,
-    			 useramountlimit: useramountlimit,
-    			 price: price,
-    			 coupontype: coupontype,
-    			 expirydate: expirydate };
-    app.api('/coupons', 'POST', data, function(result) {
-      if (result.error) {
-        var r = jQuery.parseJSON(result.error.responseText);
-        alert("Error: " + r.error);
-        return;
-      }
-      
-      cb({ username: result.username });
+    app.api('/coupons', 'POST', data, function(result){
+      if (result.error) return app.error(result.error);
+      cb({status: result.status});
     });
-  }
-  * */
+  },
+
+  renderPage: function(data) {
+    app.getUITemplate(function(result){
+      var content = Mustache.render(result.tmpl.content, data),
+          nav = Mustache.render(result.tmpl.nav, data);
+
+      $('#contentStack .contentHolder').html(content);
+      $('#navContainer .contentHolder').html(nav);
+    });
+  },
 };
 
 var handlers = {
@@ -166,9 +135,10 @@ var handlers = {
     handlers.loadProfileView();
     handlers.loadEditProfileView();
     handlers.register();
-    handlers.login(); 
+    handlers.login();
     handlers.createCoupon();
-    handlers.renderPage();
+
+    app.renderPage();
   },
 
   login: function() {
@@ -178,195 +148,136 @@ var handlers = {
           password = $('#login .password').val();
 
       app.login(username, password, function(result) {
-		  
-		  app.localStatus.authenticated = true;
-		  app.localStatus.user = {
-			  type:'logged',
-			  id: result.id,
-			  name: result.name
-		  };
-		  
-		  app.localStatus.controllerView = 'profile';
-		  $('#login').parent().html('<p class="goToProfile"><img src="/imgs/head.png"/> ' + app.localStatus.user.name + '</p>');
-		  
-		  handlers.renderPage();
+        app.setUpLoggedIn(result.name, result.id);
       });
     });
   },
-  renderPage: function(){
-	  app.getUITemplate(function(result){
-		  // load register form into right hand side #contentStack
-		  $('#contentStack .contentHolder').html(result.tmpl.content);
-		  // load navigation panel into left hand side #navContainer
-		  $('#navContainer .contentHolder').html(result.tmpl.nav);
-	  });
-  }, 
+
+
   loadRegisterView : function(){
-    $('#navContainer').on('click','#registerTrigger', function(e){
+    $(document).on('click','.registerTrigger', function(e){
       e.preventDefault();
-      
+
       if (app.localStatus.controllerView != 'register'){
-		  app.localStatus.controllerView = 'register';
-		  handlers.renderPage();
-	  }
-      
-    });
-  },
-  loadProfileView : function(){
-    $('#navContainer').on('click','#profileTrigger', function(e){
-      e.preventDefault();
-      
-      if (app.localStatus.controllerView != 'profile'){
-		  app.localStatus.controllerView = 'profile';
-		  handlers.renderPage();
-	  }
-    });
-  },
-  loadEditProfileView : function(){
-    $('#navContainer').on('click','#editProfileTrigger', function(e){
-      e.preventDefault();
-      
-      if (app.localStatus.controllerView != 'editprofile'){
-		  app.localStatus.controllerView = 'editprofile';
-		  handlers.renderPage();
-	  }
-    });
-  },
-  loadIndexView : function(){
-    $('#indexTrigger').click(function(e){
-      e.preventDefault();
-      
-      if (app.localStatus.user.type == 'logged'){
-		  app.localStatus.controllerView = 'profile';
-		  
-	  }else if (app.localStatus.controllerView != 'index'){
-		  app.localStatus.controllerView = 'index';
-	  }
-	  
-	  handlers.renderPage();
-    });
-  },
-  loadCreateCouponView: function(){
-	  $('#navContainer').on('click','#couponCreateTrigger', function(e){
-		  e.preventDefault();
-		  
-		  if (app.localStatus.controllerView != 'createcoupon'){
-			  app.localStatus.controllerView = 'createcoupon';
-			  handlers.renderPage();
-			  
-		  }
-	  });
-  },
-  register: function() {
-    $('#contentStack').on('click', '#submitRegistration', function(e){
-      e.preventDefault();
-      
-      var $form = $("#contentStack #register");
-      
-      $form.validate({      
-	    rules: {
-		  username: { required: true },
-		  password: { required: true },
-		  email: { required: true, email:true }
-	    },
-	    messages: {
-		  username : { required: 'User name is required' },
-		  password: { required: 'Password is required' },
-		  email: { required: 'Email is required', email: 'A valid email is required' }
-	    }
-      });
-      
-      if ($form.valid()) {		
-			app.register($form.serializeObject(), function(result){
-				alert('Registration Successful');
-				window.location = '/';
-			});
-		/*
-          app.setAddress();          
-          var username = $form.find('.username').val(),
-              password = $form.find('.password').val(),
-          	  email = $form.find('.email').val(),
-          	  firstname = $$form.find('.firstname').val(),
-          	  lastname = $form.find('.lastname').val(),
-          	  address = $$form.find('#address').val(),
-          	  phonenumber = $form.find('.phonenumber').val(),
-          	  creditcardnumber = $form.find('.creditnumber').val(),
-              creditcardexpirydate = $form.find('.expiryyear').val() + '-' + $('#register .expirymonth').val() + '-01', //Default and quick fix
-              paypalaccountname = $('#register .paypal').val(),
-              accounttype = $('form input[type=radio]:checked').val();                    
-          
-          app.register(username, password, email, firstname, lastname, address, phonenumber,
-      			   creditcardnumber, creditcardexpirydate, paypalaccountname, accounttype, function(result) {
-            alert('Registration Successful');
-			window.location = '/profile';
-          });
-         */
+        app.localStatus.controllerView = 'register';
+        app.renderPage();
       }
-    }); 
+    });
   },
+
+  loadProfileView : function(){
+    $(document).on('click','.profileTrigger', function(e) {
+      e.preventDefault();
+
+      app.api('/users/' + app.localStatus.user.id, function(data) {
+        if (app.localStatus.controllerView != 'profile'){
+          app.localStatus.controllerView = 'profile';
+          app.renderPage(data);
+        }
+      });
+    });
+  },
+
+  loadEditProfileView : function(){
+    $(document).on('click','.editProfileTrigger', function(e){
+      e.preventDefault();
+
+      if (app.localStatus.controllerView != 'editprofile'){
+        app.localStatus.controllerView = 'editprofile';
+        app.renderPage();
+      }
+    });
+  },
+
+  loadIndexView : function(){
+    $(document).on('click', '.indexTrigger', function(e) {
+      e.preventDefault();
+
+      if (app.localStatus.controllerView != 'index') {
+        app.localStatus.controllerView = 'index';
+        app.renderPage();
+      }
+    });
+  },
+
+  loadCreateCouponView: function(){
+    $(document).on('click','.couponCreateTrigger', function(e){
+      e.preventDefault();
+
+      if (app.localStatus.controllerView != 'createcoupon'){
+        app.localStatus.controllerView = 'createcoupon';
+        app.renderPage();
+      }
+    });
+  },
+
+  register: function() {
+    $(document).on('click', '.submitRegistration', function(e){
+      e.preventDefault();
+      var $form = $("#contentStack #register");
+
+      $form.validate({
+        rules: {
+          username: { required: true },
+          password: { required: true },
+          email: { required: true, email:true }
+        },
+        messages: {
+          username : { required: 'User name is required' },
+          password: { required: 'Password is required' },
+          email: { required: 'Email is required', email: 'A valid email is required' }
+        }
+      });
+
+      if ($form.valid()) {
+        var formData = $form.serializeObject();
+
+        app.register(formData, function(result) {
+          handlers.loginWithoutForm(formData.username, formData.password);
+        });
+      }
+    });
+  },
+
   view_profile: function() {
-  
+
   },
-  
+
   createCoupon: function() {
-	  $('#contentStack').on('click', '#datepicker', function(e){
-		  $(this).datepicker();
-	  });
-	  
-	  $('#contentStack').on('click', '#submitCreateCoupon', function(e){
-		  e.preventDefault();
-		  
-		  var $form = $("#contentStack #createCoupon");
-		  
-		  $form.validate({
-			   rules: {
-				   couponname: {required: true},
-				   description: {required: true},
-				   image_url: {required: true}
-			   },
-			   messages: {
-				   couponname: {required: 'Coupon\'s name is required'},
-				   description: {required: 'Description is required'},
-				   image_url: {required: 'URL cannot be empty'}
-			   }
-		  });
-		  
-		  if ($form.valid()){
-			  app.createCoupon($form.serializeObject(), function(result){
-				  alert(result.status);
-				  app.localStatus.controllerView = 'profile';
-				  handlers.renderPage();
-			  });
-		  }
-	  });
-       /*
-     $('#create-coupon').submit(function(ev) {
-       ev.preventDefault();
-       
-       if ($("#create-coupon").valid()) {
-       
-           var name = $('#create-coupon .couponname').val(),
-       	      description = $('#create-coupon .description').val(),
-               logo_url = $('#create-coupon .image_url').val(),
-       	      useramountlimit = $('#create-coupon .amount').val(),
-      	      price = $('#create-coupon .price').val(),
-       	      coupontype = $('#create-coupon .coupontype').val(),
-       	      expirydate = $("#datepicker").val();
-       
-           app.create_coupon(name, description, logo_url, useramountlimit, price, coupontype, expirydate, function(result) {
-             alert('Coupon Created');
-             document.location.href = 'index.html';
-          });
-       } else {
-         return false;
-       }
-     });
-     */ 
-  }  
+    $('#contentStack').on('click', '#datepicker', function(e){
+      $(this).datepicker();
+    });
+
+    $('#contentStack').on('click', '#submitCreateCoupon', function(e){
+      e.preventDefault();
+      var $form = $("#contentStack #createCoupon");
+
+      $form.validate({
+        rules: {
+          couponname: {required: true},
+          description: {required: true},
+          image_url: {required: true}
+        },
+
+        messages: {
+          couponname: {required: 'Coupon\'s name is required'},
+          description: {required: 'Description is required'},
+          image_url: {required: 'URL cannot be empty'}
+        }
+      });
+
+      if ($form.valid()){
+        app.createCoupon($form.serializeObject(), function(result){
+          alert(result.status);
+          app.localStatus.controllerView = 'profile';
+          app.renderPage();
+        });
+      }
+    });
+  }
 };
 
 jQuery(function() {
   handlers.setup();
   app.init();
-  app.register_number_only();
 });
