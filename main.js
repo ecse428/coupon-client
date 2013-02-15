@@ -42,7 +42,7 @@ var app = {
   },
 
   error: function(err) {
-    alert('Error: ' + err);
+    alert('Error: ' + JSON.stringify(err));
     console.log('Error', err);
   },
 
@@ -131,6 +131,7 @@ var handlers = {
   setup: function() {
     handlers.loadRegisterView();
     handlers.loadIndexView();
+    handlers.loadGuestView();
     handlers.loadCreateCouponView();
     handlers.loadProfileView();
     handlers.loadEditProfileView();
@@ -200,6 +201,17 @@ var handlers = {
     });
   },
 
+  loadGuestView : function(){
+    $(document).on('click', '.guestTrigger', function(e) {
+      e.preventDefault();
+
+      if (app.localStatus.controllerView != 'guest') {
+        app.localStatus.controllerView = 'guest';
+        app.renderPage();
+      }
+    });
+  },
+
   loadCreateCouponView: function(){
     $(document).on('click','.couponCreateTrigger', function(e){
       e.preventDefault();
@@ -233,14 +245,12 @@ var handlers = {
         var formData = $form.serializeObject();
 
         app.register(formData, function(result) {
-          handlers.loginWithoutForm(formData.username, formData.password);
+          app.login(formData.username, formData.password, function(data) {
+            app.setUpLoggedIn(result.name, result.id);
+          });
         });
       }
     });
-  },
-
-  view_profile: function() {
-
   },
 
   createCoupon: function() {
