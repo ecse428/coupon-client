@@ -232,7 +232,7 @@ var handlers = {
         rules: {
           username: { required: true },
           password: { required: true },
-          email: { required: true, email:true }
+          email: { required: true, email: true }
         },
         messages: {
           username : { required: 'User name is required' },
