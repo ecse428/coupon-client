@@ -121,7 +121,7 @@ var app = {
       var content = Mustache.render(result.tmpl.content, data),
           nav = Mustache.render(result.tmpl.nav, data);
 
-      $('#contentStack .contentHolder').html(content);
+      $('#contentStack .contentHolder').html(content).hide().slideDown();
       $('#navContainer .contentHolder').html(nav);
     });
   },
@@ -135,6 +135,7 @@ var handlers = {
     handlers.loadCreateCouponView();
     handlers.loadProfileView();
     handlers.loadEditProfileView();
+    handlers.loadSettingsView();
     handlers.register();
     handlers.login();
     handlers.createCoupon();
@@ -221,6 +222,16 @@ var handlers = {
         app.renderPage();
       }
     });
+  },
+  loadSettingsView: function(){
+	$(document).on('click','.settingsTrigger', function(e){
+      e.preventDefault();
+
+      if (app.localStatus.controllerView != 'settings'){
+        app.localStatus.controllerView = 'settings';
+        app.renderPage();
+      }
+    }); 
   },
 
   register: function() {
