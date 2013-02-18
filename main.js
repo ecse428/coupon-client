@@ -122,7 +122,7 @@ var app = {
           nav = Mustache.render(result.tmpl.nav, data);
 
       $('#contentStack .contentHolder').html(content).hide().slideDown();
-      $('#navContainer .contentHolder').html(nav);
+      $('#navContainer .contentHolder').html(nav).hide().fadeIn('fast');
     });
   },
 };
@@ -136,6 +136,7 @@ var handlers = {
     handlers.loadProfileView();
     handlers.loadEditProfileView();
     handlers.loadSettingsView();
+    handlers.logOut();
     handlers.register();
     handlers.login();
     handlers.createCoupon();
@@ -295,6 +296,17 @@ var handlers = {
         });
       }
     });
+  },
+  logOut: function(){
+	 $(document).on('click', '.logoutTrigger', function(e){
+		e.preventDefault();
+		
+		$.cookie('user_key', null);
+		$.cookie('key', null);
+      
+		window.location = '/';
+		
+	});
   }
 };
 
