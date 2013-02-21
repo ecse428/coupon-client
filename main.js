@@ -1,13 +1,14 @@
 var app = {
-  localStatus: {
+  self: {
     authenticated: false,
     user: {
       type: 'visitor', // visitor or logged
       id: 0,
       name: 'Visitor'
     },
-
-    controllerView: 'guest' // index, profile, register, createcoupon
+    controllerView: 'guest', // index, profile, register, createcoupon
+    nav: $('#navContainer .contentHolder'), // to hold navigation panel
+    content: $('#contentStack .contentHolder') // to hold content
   },
 
   init: function() {
@@ -60,15 +61,15 @@ var app = {
   },
 
   setUpLoggedIn: function(username, id) {
-    app.localStatus.authenticated = true;
-    app.localStatus.user = {
+    app.self.authenticated = true;
+    app.self.user = {
       type:'logged',
       id: id,
       name: username
     };
 
-    app.localStatus.controllerView = 'index';
-    $('#login').parent().html('<p class="goToProfile"><img src="/imgs/head.png"/> ' + app.localStatus.user.name + '</p>');
+    app.self.controllerView = 'index';
+    $('#login').parent().html('<p class="goToProfile"><img src="/imgs/head.png"/> ' + app.self.user.name + '</p>');
 
     app.renderPage();
   },
@@ -85,12 +86,12 @@ var app = {
     $('.phonenumber').numeric();
   },
 
-  getUITemplate: function(cb){
-    if (!app.localStatus.controllerView) {
-      app.localStatus.controllerView = 'index';
+  ui: function(cb){
+    if (!app.self.controllerView) {
+      app.self.controllerView = 'index';
     }
 
-    app.api('/ui/' + app.localStatus.controllerView, function(result){
+    app.api('/ui/' + app.self.controllerView, function(result){
       if (result.error) return app.error(result.error);
       cb({ tmpl: result.tmpl });
     });
@@ -115,14 +116,20 @@ var app = {
       cb({status: result.status});
     });
   },
+  getCoupons: function(cb){
+	  app.api('/coupons', function(result){
+		if (result.error) return app.error(result.error);
+		cb({status: result.status});
+	  });
+  },
 
   renderPage: function(data) {
-    app.getUITemplate(function(result){
+    app.ui(function(result){
       var content = Mustache.render(result.tmpl.content, data),
           nav = Mustache.render(result.tmpl.nav, data);
 
-      $('#contentStack .contentHolder').html(content).hide().slideDown();
-      $('#navContainer .contentHolder').html(nav).hide().fadeIn('fast');
+      app.self.content.html(content).hide().slideDown();
+      app.self.nav.html(nav).hide().slideDown();
     });
   },
 };
@@ -161,8 +168,8 @@ var handlers = {
     $(document).on('click','.registerTrigger', function(e){
       e.preventDefault();
 
-      if (app.localStatus.controllerView != 'register'){
-        app.localStatus.controllerView = 'register';
+      if (app.self.controllerView != 'register'){
+        app.self.controllerView = 'register';
         app.renderPage();
       }
     });
@@ -172,9 +179,9 @@ var handlers = {
     $(document).on('click','.profileTrigger', function(e) {
       e.preventDefault();
 
-      app.api('/users/' + app.localStatus.user.id, function(data) {
-        if (app.localStatus.controllerView != 'profile'){
-          app.localStatus.controllerView = 'profile';
+      app.api('/users/' + app.self.user.id, function(data) {
+        if (app.self.controllerView != 'profile'){
+          app.self.controllerView = 'profile';
           app.renderPage(data);
         }
       });
@@ -185,8 +192,8 @@ var handlers = {
     $(document).on('click','.editProfileTrigger', function(e){
       e.preventDefault();
 
-      if (app.localStatus.controllerView != 'editprofile'){
-        app.localStatus.controllerView = 'editprofile';
+      if (app.self.controllerView != 'editprofile'){
+        app.self.controllerView = 'editprofile';
         app.renderPage();
       }
     });
@@ -196,8 +203,8 @@ var handlers = {
     $(document).on('click', '.indexTrigger', function(e) {
       e.preventDefault();
 
-      if (app.localStatus.controllerView != 'index') {
-        app.localStatus.controllerView = 'index';
+      if (app.self.controllerView != 'index') {
+        app.self.controllerView = 'index';
         app.renderPage();
       }
     });
@@ -207,8 +214,8 @@ var handlers = {
     $(document).on('click', '.guestTrigger', function(e) {
       e.preventDefault();
 
-      if (app.localStatus.controllerView != 'guest') {
-        app.localStatus.controllerView = 'guest';
+      if (app.self.controllerView != 'guest') {
+        app.self.controllerView = 'guest';
         app.renderPage();
       }
     });
@@ -218,8 +225,8 @@ var handlers = {
     $(document).on('click','.couponCreateTrigger', function(e){
       e.preventDefault();
 
-      if (app.localStatus.controllerView != 'createcoupon'){
-        app.localStatus.controllerView = 'createcoupon';
+      if (app.self.controllerView != 'createcoupon'){
+        app.self.controllerView = 'createcoupon';
         app.renderPage();
       }
     });
@@ -228,11 +235,17 @@ var handlers = {
 	$(document).on('click','.settingsTrigger', function(e){
       e.preventDefault();
 
-      if (app.localStatus.controllerView != 'settings'){
-        app.localStatus.controllerView = 'settings';
+      if (app.self.controllerView != 'settings'){
+        app.self.controllerView = 'settings';
         app.renderPage();
       }
     }); 
+  },
+  
+  coupons: function(){
+	  app.getCoupons(function(result){
+		  
+	 });
   },
 
   register: function() {
@@ -291,7 +304,7 @@ var handlers = {
       if ($form.valid()){
         app.createCoupon($form.serializeObject(), function(result){
           alert(result.status);
-          app.localStatus.controllerView = 'profile';
+          app.self.controllerView = 'profile';
           app.renderPage();
         });
       }
@@ -313,4 +326,5 @@ var handlers = {
 jQuery(function() {
   handlers.setup();
   app.init();
+  handlers.coupons();
 });
