@@ -73,6 +73,21 @@ var app = {
 
     app.renderPage();
   },
+  
+  
+  setUpLogOut: function() {
+    app.self.authenticated = false;
+    app.self.user = {
+      type: 'visitor',
+      id: 0,
+      name: 'Visitor'
+    };
+    
+    app.self.controllerView = 'guest';
+    window.location = '/';
+    //app.renderPage();
+  }, 
+  
 
   register: function(data, cb){
     app.api('/users', 'POST', data, function(result){
@@ -271,7 +286,7 @@ var handlers = {
 
         app.register(formData, function(result) {
           app.login(formData.username, formData.password, function(data) {
-            app.setUpLoggedIn(result.name, result.id);
+            app.setUpLoggedIn(data.name, data.id);
           });
         });
       }
@@ -314,10 +329,13 @@ var handlers = {
 	 $(document).on('click', '.logoutTrigger', function(e){
 		e.preventDefault();
 		
-		$.cookie('user_key', null);
-		$.cookie('key', null);
-      
-		window.location = '/';
+		//$.cookie('user_key', null);
+		//$.cookie('key', null);
+		$.removeCookie('user_key');
+		$.removeCookie('key');
+      	
+      	app.setUpLogOut();
+		//window.location = '/';
 		
 	});
   }
@@ -326,5 +344,5 @@ var handlers = {
 jQuery(function() {
   handlers.setup();
   app.init();
-  handlers.coupons();
+  //handlers.coupons();
 });
