@@ -137,6 +137,13 @@ var app = {
 		cb({status: result.status});
 	  });
   },
+  
+  editUserProfile: function(data, cb) {
+    app.api('/users/' + app.self.user.id, 'PUT', data, function(result) {
+      if (result.error) return app.error(result.error);
+      cb({status: result.status});
+    });
+  },
 
   renderPage: function(data) {
     app.ui(function(result){
@@ -146,11 +153,11 @@ var app = {
       app.self.content.html(content).hide().slideDown();
       app.self.nav.html(nav).hide().slideDown();
     });
-  },
+  }
 };
 
 var handlers = {
-  setup: function() {
+  setup: function() {   
     handlers.loadRegisterView();
     handlers.loadIndexView();
     handlers.loadGuestView();
@@ -162,6 +169,7 @@ var handlers = {
     handlers.register();
     handlers.login();
     handlers.createCoupon();
+    handlers.editUserProfile();
 
     app.renderPage();
   },
@@ -206,11 +214,13 @@ var handlers = {
   loadEditProfileView : function(){
     $(document).on('click','.editProfileTrigger', function(e){
       e.preventDefault();
-
-      if (app.self.controllerView != 'editprofile'){
-        app.self.controllerView = 'editprofile';
-        app.renderPage();
-      }
+      
+      app.api('/users/' + app.self.user.id, function(data) {
+        if (app.self.controllerView != 'editprofile'){
+          app.self.controllerView = 'editprofile';
+          app.renderPage(data);
+        }
+      });
     });
   },
 
@@ -325,6 +335,7 @@ var handlers = {
       }
     });
   },
+  
   logOut: function(){
 	 $(document).on('click', '.logoutTrigger', function(e){
 		e.preventDefault();
@@ -338,11 +349,41 @@ var handlers = {
 		//window.location = '/';
 		
 	});
+  },
+  
+  editUserProfile: function(){
+    $(document).on('click', '.submitEditProfile', function(e){
+      e.preventDefault();
+      var $form = $("#contentStack #editUserProfile");
+      
+      $form.validate({
+        rules: {
+          email: {required: true}
+        },
+        messages: {
+          email: {required: 'Cannot be empty'}
+        }
+      });
+      
+      if ($form.valid()){
+        app.editUserProfile($form.serializeObject(), function(result){
+          alert(result.status);
+          app.api('/users/' + app.self.user.id, function(data) {
+            if (app.self.controllerView != 'profile'){
+              app.self.controllerView = 'profile';
+              app.renderPage(data);
+            }
+          });          
+        });
+      }
+    });
   }
+      
 };
 
 jQuery(function() {
   handlers.setup();
   app.init();
   //handlers.coupons();
+  
 });
