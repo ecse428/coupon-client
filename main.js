@@ -84,6 +84,21 @@ var app = {
 
     app.renderPage();
   },
+  
+  
+  setUpLogOut: function() {
+    app.self.authenticated = false;
+    app.self.user = {
+      type: 'visitor',
+      id: 0,
+      name: 'Visitor'
+    };
+    
+    app.self.controllerView = 'guest';
+    window.location = '/';
+    //app.renderPage();
+  }, 
+  
 
   register: function(data, cb){
     app.api('/users', 'POST', data, function(result){
@@ -133,6 +148,17 @@ var app = {
 		cb({status: result.status});
 	  });
   },
+<<<<<<< HEAD
+=======
+  
+  editUserProfile: function(data, cb) {
+    app.api('/users/' + app.self.user.id, 'PUT', data, function(result) {
+      if (result.error) return app.error(result.error);
+      cb({status: result.status});
+    });
+  },
+
+>>>>>>> 0283f5c90785ac8018418888970619e1690fd29a
   renderPage: function(data) {
 	  
 	if ( ! data || data == undefined)
@@ -145,11 +171,11 @@ var app = {
       app.self.content.html(content).hide().slideDown();
       app.self.nav.html(nav).hide().slideDown();
     });
-  },
+  }
 };
 
 var handlers = {
-  setup: function() {
+  setup: function() {   
     handlers.loadRegisterView();
     handlers.loadIndexView();
     handlers.loadGuestView();
@@ -161,6 +187,7 @@ var handlers = {
     handlers.register();
     handlers.login();
     handlers.createCoupon();
+    handlers.editUserProfile();
 
     app.renderPage();
   },
@@ -205,11 +232,13 @@ var handlers = {
   loadEditProfileView : function(){
     $(document).on('click','.editProfileTrigger', function(e){
       e.preventDefault();
-
-      if (app.self.controllerView != 'editprofile'){
-        app.self.controllerView = 'editprofile';
-        app.renderPage();
-      }
+      
+      app.api('/users/' + app.self.user.id, function(data) {
+        if (app.self.controllerView != 'editprofile'){
+          app.self.controllerView = 'editprofile';
+          app.renderPage(data);
+        }
+      });
     });
   },
 
@@ -295,7 +324,7 @@ var handlers = {
 
         app.register(formData, function(result) {
           app.login(formData.username, formData.password, function(data) {
-            app.setUpLoggedIn(result.name, result.id);
+            app.setUpLoggedIn(data.name, data.id);
           });
         });
       }
@@ -334,21 +363,55 @@ var handlers = {
       }
     });
   },
+  
   logOut: function(){
 	 $(document).on('click', '.logoutTrigger', function(e){
 		e.preventDefault();
 		
-		$.cookie('user_key', null);
-		$.cookie('key', null);
-      
-		window.location = '/';
+		//$.cookie('user_key', null);
+		//$.cookie('key', null);
+		$.removeCookie('user_key');
+		$.removeCookie('key');
+      	
+      	app.setUpLogOut();
+		//window.location = '/';
 		
 	});
+  },
+  
+  editUserProfile: function(){
+    $(document).on('click', '.submitEditProfile', function(e){
+      e.preventDefault();
+      var $form = $("#contentStack #editUserProfile");
+      
+      $form.validate({
+        rules: {
+          email: {required: true}
+        },
+        messages: {
+          email: {required: 'Cannot be empty'}
+        }
+      });
+      
+      if ($form.valid()){
+        app.editUserProfile($form.serializeObject(), function(result){
+          alert(result.status);
+          app.api('/users/' + app.self.user.id, function(data) {
+            if (app.self.controllerView != 'profile'){
+              app.self.controllerView = 'profile';
+              app.renderPage(data);
+            }
+          });          
+        });
+      }
+    });
   }
+      
 };
 
 jQuery(function() {
   handlers.setup();
   app.init();
-  handlers.coupons();
+  //handlers.coupons();
+  
 });

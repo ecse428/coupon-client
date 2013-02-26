@@ -3,11 +3,32 @@
           <span>Welcome to your profile page</span>
           <div class="username-container"></div>
         </h2>
-        <ul class="profile">
-          <li><label>Address: </label><div class=address></div><button>Edit</button>
-          <li><label>Phone Number: </label><div class=phonenumber></div><button>Edit</button>
-          <li><label>Credit Card Number: </label><div class=creditnumber></div><button>Edit</button>
-          <li><label>Paypal Account: </label><div class=paypal></div><button>Edit</button>    
-        </ul>
-    
+        <form id="editUserProfile">
 
+        <div><label>Current Email: </label><span>{{ email }}</span>
+        </div>
+        <div><label>New Email: </label>
+          <input name="email" type="text" class="email">
+        </div>
+        
+        <div class=address><label>Address: </label>
+          <input name="address" type="text" class="address">
+        </div>
+
+		<div class=phonenumber><label>Phone Number: </label>
+		  <input>
+		</div>
+		
+		<div class=creditnumber><label>Credit Card Number: </label>
+		  <input>
+		</div>
+
+		<div class=paypal><label>Paypal Account: </label>
+		  <input>
+		</div>    
+        
+        <div class="submit">
+    	  <button class="submitEditProfile" type="button">Edit</button>
+  		</div>
+        </form>
+		
