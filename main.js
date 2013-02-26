@@ -148,8 +148,7 @@ var app = {
 		cb({status: result.status});
 	  });
   },
-<<<<<<< HEAD
-=======
+
   
   editUserProfile: function(data, cb) {
     app.api('/users/' + app.self.user.id, 'PUT', data, function(result) {
@@ -158,7 +157,6 @@ var app = {
     });
   },
 
->>>>>>> 0283f5c90785ac8018418888970619e1690fd29a
   renderPage: function(data) {
 	  
 	if ( ! data || data == undefined)
