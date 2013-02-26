@@ -6,7 +6,8 @@ var app = {
       id: 0,
       name: 'Visitor'
     },
-    controllerView: 'guest', // index, profile, register, createcoupon
+    controllerView: 'guest', // guest, index, profile, register, createcoupon
+    controllerData: {},
     nav: $('#navContainer .contentHolder'), // to hold navigation panel
     content: $('#contentStack .contentHolder') // to hold content
   },
@@ -19,7 +20,9 @@ var app = {
       }
     });
   },
-
+  authenticated: function(){
+	  return app.self.authenticated;
+  },
   api: function() {
     var self = this,
         args = Array.prototype.slice.call(arguments),
@@ -46,7 +49,15 @@ var app = {
     alert('Error: ' + JSON.stringify(err));
     console.log('Error', err);
   },
-
+  loadData: function(uri){
+	  app.self.controllerData = {};
+	  app.api('/data', 'GET', {param: uri}, function(result){
+		  if (result.error) return app.error(result.error);
+		  
+		  app.self.controllerData = result.data;
+	  });
+	  
+  },
   login: function(username, password, cb) {
     var data = { username: username, password: password };
 
@@ -122,8 +133,11 @@ var app = {
 		cb({status: result.status});
 	  });
   },
-
   renderPage: function(data) {
+	  
+	if ( ! data || data == undefined)
+		data = app.self.controllerData;
+	
     app.ui(function(result){
       var content = Mustache.render(result.tmpl.content, data),
           nav = Mustache.render(result.tmpl.nav, data);
@@ -202,10 +216,17 @@ var handlers = {
   loadIndexView : function(){
     $(document).on('click', '.indexTrigger', function(e) {
       e.preventDefault();
-
+	  
+	  
+	  // fetch template if necessary
       if (app.self.controllerView != 'index') {
         app.self.controllerView = 'index';
-        app.renderPage();
+        
+        // fetch data and render
+        app.getCoupons(function(result){
+			app.renderPage();
+		});
+        
       }
     });
   },
@@ -224,6 +245,9 @@ var handlers = {
   loadCreateCouponView: function(){
     $(document).on('click','.couponCreateTrigger', function(e){
       e.preventDefault();
+
+	  app.loadData('index');
+	  alert(app.self.controllerData);
 
       if (app.self.controllerView != 'createcoupon'){
         app.self.controllerView = 'createcoupon';
