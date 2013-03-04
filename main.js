@@ -6,7 +6,7 @@ var app = {
       id: 0,
       name: 'Visitor'
     },
-    controllerView: 'guest', // guest, index, profile, register, createcoupon
+    controllerView: 'guest', // guest, index, profile, register, createcoupon, search, searchresult
     controllerData: {},
     nav: $('#navContainer .contentHolder'), // to hold navigation panel
     content: $('#contentStack .contentHolder') // to hold content
@@ -142,18 +142,32 @@ var app = {
       cb({status: result.status});
     });
   },
+  
   getCoupons: function(cb){
 	  app.api('/coupons', function(result){
 		if (result.error) return app.error(result.error);
 		cb({status: result.status});
 	  });
   },
-
   
   editUserProfile: function(data, cb) {
     app.api('/users/' + app.self.user.id, 'PUT', data, function(result) {
       if (result.error) return app.error(result.error);
       cb({status: result.status});
+    });
+  },
+  
+  searchUser: function(data, cb) {
+    app.api('/user_search', 'POST', data, function(result) {
+      if (result.error) return app.error(result.error);
+      cb(result);
+    });
+  },
+  
+  searchCoupon: function(data, cb) {
+    app.api('/coupon_search', 'POST', data, function(result) {
+      if (result.error) return app.error(result.error);
+      cb(result);
     });
   },
 
@@ -186,6 +200,9 @@ var handlers = {
     handlers.login();
     handlers.createCoupon();
     handlers.editUserProfile();
+    handlers.loadSearchView();
+    handlers.searchUser();
+    handlers.searchCoupon();
 
     app.renderPage();
   },
@@ -257,6 +274,17 @@ var handlers = {
       }
     });
   },
+  
+  loadSearchView : function(){
+    $(document).on('click', '.searchTrigger', function(e) {
+      e.preventDefault();
+      
+      if (app.self.controllerView != 'search') {
+        app.self.controllerView = 'search';        
+        app.renderPage();
+      }
+    });
+  },
 
   loadGuestView : function(){
     $(document).on('click', '.guestTrigger', function(e) {
@@ -273,8 +301,8 @@ var handlers = {
     $(document).on('click','.couponCreateTrigger', function(e){
       e.preventDefault();
 
-	  app.loadData('index');
-	  alert(app.self.controllerData);
+	  //app.loadData('index');
+	  //alert(app.self.controllerData);
 
       if (app.self.controllerView != 'createcoupon'){
         app.self.controllerView = 'createcoupon';
@@ -403,13 +431,41 @@ var handlers = {
         });
       }
     });
-  }
+  },
+  
+  searchUser: function(){
+    $(document).on('click', '#submitSearchUser', function(e){
+      e.preventDefault();
+      var $form = $("#contentStack #searchUser");
+      app.searchUser($form.serializeObject(), function(data){
+        //alert(result.status);
+        if (app.self.controllerView != 'user_result'){
+    	  app.self.controllerView = 'user_result';
+    	  app.renderPage(data);
+    	}
+      });
+    });
+  },
+  
+  searchCoupon: function(){
+    $(document).on('click', '#submitSearchCoupon', function(e){
+      e.preventDefault();
+      var $form = $("#contentStack #searchCoupon");
+      app.searchCoupon($form.serializeObject(), function(data){
+        //alert(result.status);
+        if (app.self.controllerView != 'coupon_result'){
+    	  app.self.controllerView = 'coupon_result';
+    	  app.renderPage(data);
+    	}
+      });
+    });
+  },
+  
       
 };
 
 jQuery(function() {
   handlers.setup();
   app.init();
-  //handlers.coupons();
-  
+  //handlers.coupons();  
 });
