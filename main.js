@@ -270,7 +270,7 @@ var handlers = {
         
         // fetch data and render
         app.getCoupons(function(result){
-			app.renderPage();
+			app.renderPage(result);
 		});
         
       }
