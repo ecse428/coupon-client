@@ -240,10 +240,29 @@ a {
 				margin:6px;
 				border:1px solid #bbb;
 				box-shadow: 1px 1px 8px #888;
+				overflow:hidden;
 				
-				&.long {
-					width:492px;
+				.triangle {
+					float:right;
+					transform: rotate(45deg);
+					-ms-transform: rotate(45deg); /* IE 9 */
+					-webkit-transform: rotate(45deg); /* Safari and Chrome */
+					-o-transform: rotate(45deg); /* Opera */
+					-moz-transform: rotate(45deg); /* Firefox */
+					font-size:24px;
+					font-weight:lighter;
+					text-align:center;
+					
 				}
+				
+				p,img {
+					margin: 5px;
+				}
+				
+				img {
+					height:200px;
+				}
+
 			}
 		}
 	    

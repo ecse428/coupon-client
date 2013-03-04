@@ -3,13 +3,13 @@
           <span>Recent</span>
         </h2>
         <ul id="recentCoupons">
-          <li class="long"></li>
-          <li></li> 
-          <li></li> 
-          <li class="long"></li> 
-          <li></li> 
-          <li class="long"></li> 
-          <li></li>  
+        {{#data}}
+			<li>
+				<p>{{name}} <span class="triangle">${{price}}</span></p>
+				<p><img src="{{logo_url}}"/></p>
+				<p>Brief: {{description}}</p>
+			</li>
+		{{/data}}
         </ul>
         
     

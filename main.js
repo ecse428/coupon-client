@@ -82,7 +82,9 @@ var app = {
     app.self.controllerView = 'index';
     $('#login').parent().html('<p class="goToProfile"><img src="/imgs/head.png"/> ' + app.self.user.name + '</p>');
 
-    app.renderPage();
+    app.getCoupons(function(result){
+		app.renderPage(result);
+	});
   },
   
   
@@ -146,7 +148,7 @@ var app = {
   getCoupons: function(cb){
 	  app.api('/coupons', function(result){
 		if (result.error) return app.error(result.error);
-		cb({status: result.status});
+		cb(result);
 	  });
   },
   
