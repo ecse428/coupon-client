@@ -412,7 +412,7 @@ var handlers = {
       
       $form.validate({
         rules: {
-          email: {required: true}
+          email: {required: true, email: true}
         },
         messages: {
           email: {required: 'Cannot be empty'}
@@ -437,13 +437,25 @@ var handlers = {
     $(document).on('click', '#submitSearchUser', function(e){
       e.preventDefault();
       var $form = $("#contentStack #searchUser");
-      app.searchUser($form.serializeObject(), function(data){
-        //alert(result.status);
-        if (app.self.controllerView != 'user_result'){
-    	  app.self.controllerView = 'user_result';
-    	  app.renderPage(data);
-    	}
+      
+      $form.validate({
+        rules: {
+          username: {required: true}
+        },
+        messages: {
+          username: {required: ''}
+        }
       });
+      
+      if ($form.valid()) {
+        app.searchUser($form.serializeObject(), function(data){
+          //alert(result.status);
+          if (app.self.controllerView != 'user_result'){
+    	    app.self.controllerView = 'user_result';
+    	    app.renderPage(data);
+    	  }
+        });
+      }
     });
   },
   
@@ -451,13 +463,25 @@ var handlers = {
     $(document).on('click', '#submitSearchCoupon', function(e){
       e.preventDefault();
       var $form = $("#contentStack #searchCoupon");
-      app.searchCoupon($form.serializeObject(), function(data){
-        //alert(result.status);
-        if (app.self.controllerView != 'coupon_result'){
-    	  app.self.controllerView = 'coupon_result';
-    	  app.renderPage(data);
-    	}
+      
+      $form.validate({
+        rules: {
+          couponname: {required: true}
+        },
+        messages: {
+          couponname: {required: ''}
+        }
       });
+      
+      if ($form.valid()) {
+        app.searchCoupon($form.serializeObject(), function(data){
+          //alert(result.status);
+          if (app.self.controllerView != 'coupon_result'){
+    	    app.self.controllerView = 'coupon_result';
+    	    app.renderPage(data);
+    	  }
+        });
+      }
     });
   },
   
