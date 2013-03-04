@@ -151,7 +151,12 @@ var app = {
 		cb(result);
 	  });
   },
-  
+  getAllCoupons: function(cb){
+	  app.api('/coupons/all', function(result){
+		if (result.error) return app.error(result.error);
+		cb(result);
+	  });
+  },
   editUserProfile: function(data, cb) {
     app.api('/users/' + app.self.user.id, 'PUT', data, function(result) {
       if (result.error) return app.error(result.error);
@@ -177,6 +182,12 @@ var app = {
 	  
 	if ( ! data || data == undefined)
 		data = app.self.controllerData;
+	
+	if (app.self.controllerView == 'guest'){
+		app.getAllCoupons(function(result){
+			data = result;
+		});
+	}
 	
     app.ui(function(result){
       var content = Mustache.render(result.tmpl.content, data),
@@ -294,7 +305,11 @@ var handlers = {
 
       if (app.self.controllerView != 'guest') {
         app.self.controllerView = 'guest';
-        app.renderPage();
+        
+        app.getAllCoupons(function(result){
+			app.renderPage(result);
+		});
+        
       }
     });
   },

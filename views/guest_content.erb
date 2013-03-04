@@ -1,4 +1,14 @@
 <h2>Welcome to Coupon Management<sup>Beta</sup></h2>
 
+		<ul id="recentCoupons">
+        {{#data}}
+			<li>
+				<p>{{name}} <span class="triangle">${{price}}</span></p>
+				<p><img src="{{logo_url}}"/></p>
+				<p>Brief: {{description}}</p>
+			</li>
+		{{/data}}
+        </ul>
+
 
 
