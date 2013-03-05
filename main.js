@@ -157,6 +157,12 @@ var app = {
 		cb(result);
 	  });
   },
+  getCoupon: function(id, cb){
+	  app.api('/coupons/' + id, function(result){
+		  if (result.error) return app.error(result.error);
+		  cb(result);
+	  });
+  },
   editUserProfile: function(data, cb) {
     app.api('/users/' + app.self.user.id, 'PUT', data, function(result) {
       if (result.error) return app.error(result.error);
@@ -216,6 +222,7 @@ var handlers = {
     handlers.loadSearchView();
     handlers.searchUser();
     handlers.searchCoupon();
+    handlers.loadCouponDetailView();
 
     app.renderPage();
   },
@@ -283,7 +290,6 @@ var handlers = {
         app.getCoupons(function(result){
 			app.renderPage(result);
 		});
-        
       }
     });
   },
@@ -336,6 +342,21 @@ var handlers = {
         app.renderPage();
       }
     }); 
+  },
+  loadCouponDetailView: function(){
+	$(document).on('click','.couponDetailTrigger', function(e){
+      e.preventDefault();
+
+      var id = $(this).attr('data-uri-id');
+      
+      if (app.self.controllerView != 'coupondetail'){
+        app.self.controllerView = 'coupondetail';
+        app.getCoupon(id, function(result){
+			app.renderPage(result);
+		});
+        
+      }
+    });   
   },
   
   coupons: function(){
@@ -504,6 +525,7 @@ var handlers = {
   
       
 };
+
 
 jQuery(function() {
   handlers.setup();
