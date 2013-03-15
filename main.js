@@ -334,6 +334,7 @@ var handlers = {
       if (app.self.controllerView != 'createcoupon'){
         app.self.controllerView = 'createcoupon';
         app.renderPage();
+        $('#contentStack .datepicker').datepicker();
       }
     });
   },
@@ -398,11 +399,6 @@ var handlers = {
   },
 
   createCoupon: function() {
-    // TODO Fix this
-    $('#contentStack').on('click', '#datepicker', function(e){
-      $(this).datepicker();
-    });
-
     $('#contentStack').on('submit', '#createCoupon', function(e){
       e.preventDefault();
       var $form = $("#createCoupon");
@@ -424,7 +420,9 @@ var handlers = {
       if ($form.valid()){
         app.createCoupon($form.serializeObject(), function(result){
           app.self.controllerView = 'index';
-          app.renderPage();
+          app.getCoupons(function(result){
+            app.renderPage(result);
+          });
         });
       }
     });
@@ -438,21 +436,20 @@ var handlers = {
   },
 
   editUserProfile: function(){
-    $(document).on('click', '.submitEditProfile', function(e){
+    $(document).on('submit', '#editUserProfile', function(e){
       e.preventDefault();
       var $form = $("#contentStack #editUserProfile");
       $form.validate({
         rules: {
-          email: {required: true, email: true}
+          email: {email: true}
         },
         messages: {
-          email: {required: 'Cannot be empty'}
+          email: {required: 'Invalid empty'}
         }
       });
 
       if ($form.valid()){
         app.editUserProfile($form.serializeObject(), function(result){
-          alert(result.status);
           app.api('/users/' + app.self.user.id, function(data) {
             if (app.self.controllerView != 'profile'){
               app.self.controllerView = 'profile';

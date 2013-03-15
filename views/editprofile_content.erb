@@ -1,34 +1,26 @@
-
-        <h2 class="welcome">
-          <span>Welcome to your profile page</span>
-          <div class="username-container"></div>
-        </h2>
-        <form id="editUserProfile">
-
-        <div><label>Current Email: </label><p>{{ email }}</p>
-        </div>
-        <div><label>New Email: </label>
-          <input name="email" type="text" class="email">
-        </div>
-        
-        <div class=address><label>Address: </label>
-          <input name="address" type="text" class="address">
-        </div>
-
-		<div class=phonenumber><label>Phone Number: </label>
-		  <input>
-		</div>
-		
-		<div class=creditnumber><label>Credit Card Number: </label>
-		  <input>
-		</div>
-
-		<div class=paypal><label>Paypal Account: </label>
-		  <input>
-		</div>    
-        
-        <div class="submit">
-    	  <button class="submitEditProfile" type="button">Edit</button>
-  		</div>
-        </form>
-		
+<h2 class="welcome">
+  <span>Welcome to your profile page</span>
+  <div class="username-container"></div>
+</h2>
+<form id="editUserProfile">
+  <div>
+    <label>Current Email: </label>
+    <p>{{ email }}</p>
+  </div>
+  <div><label>New Email: </label>
+    <input name="email" type="text" class="email">
+  </div>
+  <div class=address>
+    <label>Address: </label>
+    <input name="address" type="text" class="address">
+  </div>
+  <div class=phonenumber>
+    <label for="phone">Phone Number: </label>
+    <input name="phone" type="text">
+  </div>
+  <div class=paypal>
+    <label for="paypal">Paypal Account: </label>
+    <input name="paypal" type="text">
+  </div>
+  <input type="submit" value="Edit" />
+</form>
