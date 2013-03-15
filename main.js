@@ -398,13 +398,14 @@ var handlers = {
   },
 
   createCoupon: function() {
+    // TODO Fix this
     $('#contentStack').on('click', '#datepicker', function(e){
       $(this).datepicker();
     });
 
-    $('#contentStack').on('click', '#submitCreateCoupon', function(e){
+    $('#contentStack').on('submit', '#createCoupon', function(e){
       e.preventDefault();
-      var $form = $("#contentStack #createCoupon");
+      var $form = $("#createCoupon");
 
       $form.validate({
         rules: {
@@ -422,8 +423,7 @@ var handlers = {
 
       if ($form.valid()){
         app.createCoupon($form.serializeObject(), function(result){
-          alert(result.status);
-          app.self.controllerView = 'profile';
+          app.self.controllerView = 'index';
           app.renderPage();
         });
       }
