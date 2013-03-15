@@ -163,6 +163,14 @@ var app = {
 		  cb(result);
 	  });
   },
+  
+  buyCoupon: function(data, cb){
+      app.api('/coupons/purchase/', 'POST', data, function(result){
+          if (result.error) return app.error(result.error);
+          cb(result);
+      });
+  },
+  
   editUserProfile: function(data, cb) {
     app.api('/users/' + app.self.user.id, 'PUT', data, function(result) {
       if (result.error) return app.error(result.error);
@@ -522,6 +530,18 @@ var handlers = {
       }
     });
   },
+  
+  buyCoupon: function(){
+    $(document).on('click', '#submitBuyCoupon', function(e){
+      e.preventDefault();
+      var $form = $("#contentStack #buyCoupon");
+      
+      app.buyCoupon($form.serializeObject(), function(data){
+        alert(result.status);
+      });      
+    });
+  }
+      
   
       
 };
