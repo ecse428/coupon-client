@@ -1,7 +1,11 @@
 <h2>Search Result</h2>
-<div id="couponresult">
-<p>ID: {{ id }}</p>
-<p>Description: {{ description }}</p>
-<p>Logo URL: {{ logo_url }}</p>
-<p>Type: {{ coupontype }}</p>
-</div>
+<ul id="recentCoupons">
+{{#data}}
+<li>
+  <a href="#" class="couponDetailTrigger" data-uri-id="{{id}}">
+  <p>{{name}} <span class="triangle">${{price}}</span></p>
+  <p><img src="{{logo_url}}"/></p>
+  <p>Brief: {{description}}</p></a>
+</li>
+{{/data}}
+</ul>

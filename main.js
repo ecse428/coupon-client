@@ -174,6 +174,7 @@ var app = {
 
   searchUser: function(data, cb) {
     app.api('/user_search', 'POST', data, function(result) {
+      console.log('res', result);
       if (result.error) return app.error(result.error);
       cb(result);
     });
@@ -458,54 +459,31 @@ var handlers = {
   },
 
   searchUser: function(){
-    $(document).on('click', '#submitSearchUser', function(e){
+    $(document).on('submit', '#searchUser', function(e){
       e.preventDefault();
-      var $form = $("#contentStack #searchUser");
+      var $form = $("#searchUser");
 
-      $form.validate({
-        rules: {
-          username: {required: true}
-        },
-        messages: {
-          username: {required: ''}
+      app.searchUser($form.serializeObject(), function(data){
+        if (app.self.controllerView != 'user_result'){
+          app.self.controllerView = 'user_result';
+          app.renderPage(data);
         }
       });
-
-      if ($form.valid()) {
-        app.searchUser($form.serializeObject(), function(data){
-          //alert(result.status);
-          if (app.self.controllerView != 'user_result'){
-            app.self.controllerView = 'user_result';
-            app.renderPage(data);
-          }
-        });
-      }
     });
   },
 
   searchCoupon: function(){
-    $(document).on('click', '#submitSearchCoupon', function(e){
+    $(document).on('submit', '#searchCoupon', function(e){
       e.preventDefault();
-      var $form = $("#contentStack #searchCoupon");
+      var $form = $("#searchCoupon");
 
-      $form.validate({
-        rules: {
-          couponname: {required: true}
-        },
-        messages: {
-          couponname: {required: ''}
+      app.searchCoupon($form.serializeObject(), function(data){
+        console.log('data', data);
+        if (app.self.controllerView != 'coupon_result'){
+          app.self.controllerView = 'coupon_result';
+          app.renderPage(data);
         }
       });
-
-      if ($form.valid()) {
-        app.searchCoupon($form.serializeObject(), function(data){
-          //alert(result.status);
-          if (app.self.controllerView != 'coupon_result'){
-            app.self.controllerView = 'coupon_result';
-            app.renderPage(data);
-          }
-        });
-      }
     });
   },
 
