@@ -42,13 +42,19 @@ var app = {
 
     req.done(cb);
     req.fail(function(err) {
-      cb({ error: err.error() });
+      try {
+        var errObj = JSON.parse(err.responseText);
+        if (!errObj.error) errObj = {error: errObj};
+        cb(errObj);
+      } catch (e) {
+        cb({ error: err.responseText });
+      }
     });
   },
 
   error: function(err) {
-    alert('Error: ' + JSON.stringify(err));
-    console.log('Error', err);
+    if (err.error) err = err.error;
+    alert('Error: ' + err);
   },
 
   loadData: function(uri){
