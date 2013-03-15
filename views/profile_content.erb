@@ -1,3 +1,15 @@
-<p>ID: {{ id }}</p>
-<p>Username: {{ username }}</p>
-<p>Email: {{ email }}</p>
+<div>
+  <h3>Information</h3>
+  <p>Username: {{ username }}</p>
+  <p>Email: {{ email }}</p>
+  <p>First Name: {{ firstname }}</p>
+  <p>Last Name: {{ lastname }}</p>
+</div>
+
+{{ #admin }}
+<div class="admin">
+  <h3>Admin Pages</h3>
+  <p><a href="/testpage" class="testpageTrigger">Server Side Tests</a></p>
+  <p><a href="/client-tests">Client Side Tests</a></p>
+</div>
+{{ /admin }}

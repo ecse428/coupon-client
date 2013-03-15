@@ -12,7 +12,7 @@
   </head>
 
   <body>
-	
+
     <div class="headerContainer">
       <div class="header">
         <div class="subsection brand">
@@ -64,7 +64,15 @@
     <script src="/vendor/jquery.validate.js"></script>
     <script src="/vendor/jquery.serializeobject.js"></script>
     <script src="/vendor/mustache.js"></script>
-    <script src="main.js"></script>
 
+    <script src="/main.js"></script>
+    <script>
+      console.log('one');
+      jQuery(function() {
+        console.log('here');
+        handlers.setup();
+        app.init();
+      });
+    </script>
   </body>
 </html>
