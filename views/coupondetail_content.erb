@@ -1,6 +1,13 @@
 {{#data}}
 <h2>{{name}}</h2>
 <div id="couponresult">
+  <form id="buycoupon">
+    <p>
+      <label>Amount: </label>
+      <input name="amounttobuy" type="text" class="amounttobuy" size="6">
+      <button id="submitBuyCoupon" type="button">Buy</button>
+    </p>
+  </form>
 <p>ID: {{ id }}</p>
 <p>Description: {{ description }}</p>
 <p><img src="{{ logo_url }}"/></p>
