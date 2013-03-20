@@ -24,6 +24,9 @@ var app = {
   authenticated: function(){
     return app.self.authenticated;
   },
+  setView: function(viewName){
+	  app.self.controllerView = viewName;
+  },
 
   api: function() {
     var self = this,
@@ -92,7 +95,8 @@ var app = {
       name: username
     };
 
-    app.self.controllerView = 'index';
+    //app.self.controllerView = 'index';
+    app.setView('index');
     $('#login').parent().html('<p class="goToProfile"><img src="/imgs/head.png"/> ' + app.self.user.name + '</p>');
 
     app.getCoupons(function(result){
@@ -114,7 +118,7 @@ var app = {
 
   ui: function(cb){
     if (!app.self.controllerView) {
-      app.self.controllerView = 'index';
+      app.setView('index');
     }
 
     app.api('/ui/' + app.self.controllerView, function(result){
@@ -251,9 +255,10 @@ var handlers = {
   loadRegisterView : function(){
     $(document).on('click','.registerTrigger', function(e){
       e.preventDefault();
+      
 
       if (app.self.controllerView != 'register'){
-        app.self.controllerView = 'register';
+        app.setView('register');
         app.renderPage();
       }
     });
@@ -266,7 +271,7 @@ var handlers = {
       app.api('/users/' + app.self.user.id, function(data) {
         if (data.accounttype == 'admin') data.admin = true;
         if (app.self.controllerView != 'profile'){
-          app.self.controllerView = 'profile';
+          app.setView('profile');
           app.renderPage(data);
         }
       });
@@ -279,7 +284,7 @@ var handlers = {
 
       app.api('/users/' + app.self.user.id, function(data) {
         if (app.self.controllerView != 'editprofile'){
-          app.self.controllerView = 'editprofile';
+          app.setView('editprofile');
           app.renderPage(data);
         }
       });
@@ -292,7 +297,7 @@ var handlers = {
 
       // fetch template if necessary
       if (app.self.controllerView != 'index') {
-        app.self.controllerView = 'index';
+        app.setView('index');
 
         // fetch data and render
         app.getCoupons(function(result){
@@ -307,7 +312,7 @@ var handlers = {
       e.preventDefault();
 
       if (app.self.controllerView != 'search') {
-        app.self.controllerView = 'search';
+        app.setView('search');
         app.renderPage();
       }
     });
@@ -318,7 +323,7 @@ var handlers = {
       e.preventDefault();
 
       if (app.self.controllerView != 'guest') {
-        app.self.controllerView = 'guest';
+        app.setView('guest');
 
         app.getAllCoupons(function(result){
           app.renderPage(result);
@@ -332,7 +337,7 @@ var handlers = {
       e.preventDefault();
 
       if (app.self.controllerView != 'createcoupon'){
-        app.self.controllerView = 'createcoupon';
+        app.setView('createcoupon');
         app.renderPage();
         $('#contentStack .datepicker').datepicker();
       }
@@ -344,7 +349,7 @@ var handlers = {
       e.preventDefault();
 
       if (app.self.controllerView != 'settings'){
-        app.self.controllerView = 'settings';
+        app.setView('settings');
         app.renderPage();
       }
     });
@@ -355,7 +360,7 @@ var handlers = {
 
       var id = $(this).attr('data-uri-id');
       if (app.self.controllerView != 'coupondetail') {
-        app.self.controllerView = 'coupondetail';
+        app.setView('coupondetail');
 
         app.getCoupon(id, function(result){
           app.renderPage(result);
@@ -419,7 +424,7 @@ var handlers = {
 
       if ($form.valid()){
         app.createCoupon($form.serializeObject(), function(result){
-          app.self.controllerView = 'index';
+          app.setView('index');
           app.getCoupons(function(result){
             app.renderPage(result);
           });
@@ -452,7 +457,7 @@ var handlers = {
         app.editUserProfile($form.serializeObject(), function(result){
           app.api('/users/' + app.self.user.id, function(data) {
             if (app.self.controllerView != 'profile'){
-              app.self.controllerView = 'profile';
+              app.setView('profile');
               app.renderPage(data);
             }
           });
@@ -468,7 +473,7 @@ var handlers = {
 
       app.searchUser($form.serializeObject(), function(data){
         if (app.self.controllerView != 'user_result'){
-          app.self.controllerView = 'user_result';
+          app.setView('user_result');
           app.renderPage(data);
         }
       });
@@ -483,7 +488,7 @@ var handlers = {
       app.searchCoupon($form.serializeObject(), function(data){
         console.log('data', data);
         if (app.self.controllerView != 'coupon_result'){
-          app.self.controllerView = 'coupon_result';
+          app.setView('coupon_result');
           app.renderPage(data);
         }
       });
@@ -507,7 +512,7 @@ var handlers = {
 
       app.api('/tests', function(data) {
         if (app.self.controllerView != 'testpage'){
-          app.self.controllerView = 'testpage';
+          app.setView('testpage');
           app.renderPage(data);
         }
       });
