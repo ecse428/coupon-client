@@ -27,6 +27,15 @@ var app = {
   setView: function(viewName){
 	  app.self.controllerView = viewName;
   },
+  load: function(view){
+	  if (app.self.controllerView != view){
+        app.setView(view);
+        app.renderPage();
+      }
+  },
+  refresh: function(){
+	  
+  },
 
   api: function() {
     var self = this,
@@ -255,12 +264,8 @@ var handlers = {
   loadRegisterView : function(){
     $(document).on('click','.registerTrigger', function(e){
       e.preventDefault();
-      
-
-      if (app.self.controllerView != 'register'){
-        app.setView('register');
-        app.renderPage();
-      }
+	  app.load('register');
+	  
     });
   },
 
@@ -310,11 +315,8 @@ var handlers = {
   loadSearchView : function(){
     $(document).on('click', '.searchTrigger', function(e) {
       e.preventDefault();
-
-      if (app.self.controllerView != 'search') {
-        app.setView('search');
-        app.renderPage();
-      }
+      
+      app.load('search');
     });
   },
 
@@ -347,11 +349,8 @@ var handlers = {
   loadSettingsView: function(){
     $(document).on('click','.settingsTrigger', function(e){
       e.preventDefault();
-
-      if (app.self.controllerView != 'settings'){
-        app.setView('settings');
-        app.renderPage();
-      }
+      
+      app.load('settings');
     });
   },
   loadCouponDetailView: function(){
