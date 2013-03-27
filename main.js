@@ -176,9 +176,14 @@ var app = {
       cb(result);
     });
   },
+  
+  getPurchasedCoupons: function(user_id, cb){
+    //temp
+	app.getAllCoupons(cb);
+  },
 
   buyCoupon: function(data, cb){
-    app.api('/coupons/purchase/', 'POST', data, function(result){
+    app.api('/coupons/buy/', 'POST', data, function(result){
       if (result.error) return app.error(result.error);
       cb(result);
     });
@@ -234,6 +239,7 @@ var handlers = {
     handlers.loadProfileView();
     handlers.loadEditProfileView();
     handlers.loadSettingsView();
+    handlers.loadPurchasedCoupon();
     handlers.logOut();
     handlers.register();
     handlers.login();
@@ -353,6 +359,7 @@ var handlers = {
       app.load('settings');
     });
   },
+  
   loadCouponDetailView: function(){
     $(document).on('click','.couponDetailTrigger', function(e){
       e.preventDefault();
@@ -362,6 +369,20 @@ var handlers = {
         app.setView('coupondetail');
 
         app.getCoupon(id, function(result){
+          app.renderPage(result);
+        });
+      }
+    });
+  },
+  
+  loadPurchasedCoupon: function(){
+    $(document).on('click', '.couponPurchasedTrigger', function(e){
+      e.preventDefault();
+      
+      var user_id = app.self.user.id;
+      if (app.self.controllerView != 'purchasedcoupon'){
+        app.setView('purchasedcoupon');
+        app.getPurchasedCoupons(user_id, function(result){
           app.renderPage(result);
         });
       }
@@ -495,10 +516,9 @@ var handlers = {
   },
 
   buyCoupon: function(){
-    $(document).on('click', '#submitBuyCoupon', function(e){
+    $(document).on('submit', '#buyCoupon', function(e){
       e.preventDefault();
-      var $form = $("#contentStack #buyCoupon");
-
+      var $form = $("#buyCoupon");
       app.buyCoupon($form.serializeObject(), function(data){
         alert(data.status);
       });
