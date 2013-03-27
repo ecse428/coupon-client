@@ -178,12 +178,16 @@ var app = {
   },
   
   getPurchasedCoupons: function(user_id, cb){
+    app.api('/coupons/purchased/' + user_id, function(result){
+      if (result.error) return app.error(result.error);
+      cb(result);
+    });
     //temp
-	app.getAllCoupons(cb);
+	//app.getAllCoupons(cb);
   },
 
-  buyCoupon: function(data, cb){
-    app.api('/coupons/buy/', 'POST', data, function(result){
+  buyCoupon: function(data, user_id, id, cb){
+    app.api('/coupons/buy/' + user_id + '/' + id, 'POST', data, function(result){
       if (result.error) return app.error(result.error);
       cb(result);
     });
@@ -248,6 +252,7 @@ var handlers = {
     handlers.loadSearchView();
     handlers.searchUser();
     handlers.searchCoupon();
+    handlers.buyCoupon();
     handlers.loadCouponDetailView();
     handlers.loadTestpageView();
 
@@ -519,8 +524,16 @@ var handlers = {
     $(document).on('submit', '#buyCoupon', function(e){
       e.preventDefault();
       var $form = $("#buyCoupon");
-      app.buyCoupon($form.serializeObject(), function(data){
-        alert(data.status);
+      var user_id = app.self.user.id;
+      var id = $(this).attr('data-uri-id');
+      app.buyCoupon($form.serializeObject(), user_id, id, function(data){
+        //alert(data.status);
+        if (app.self.controllerView != 'purchasedcoupon'){
+          app.setView('purchasedcoupon');
+          app.getPurchasedCoupons(user_id, function(result){
+          app.renderPage(result);
+        });
+        }
       });
     });
   },
