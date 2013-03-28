@@ -1,11 +1,11 @@
 {{#data}}
 <h2>{{name}}</h2>
 <div id="couponresult">
-  <form id="buycoupon">
+  <form id="buyCoupon" data-uri-id="{{ id }}">
     <p>
       <label>Amount: </label>
-      <input name="amounttobuy" type="text" class="amounttobuy" size="6">
-      <button id="submitBuyCoupon" type="button">Buy</button>
+      <input name="purchased_quantity" type="text" class="purchased_quantity" size="6" value="1">
+      <input type="submit" value="Buy" />
     </p>
   </form>
 <p>ID: {{ id }}</p>
