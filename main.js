@@ -125,6 +125,7 @@ var routes = {
     $.removeCookie('user_key');
     $.removeCookie('key');
     app.route('guest');
+    window.location = '/';
   },
 
   'searchusers': function() {
