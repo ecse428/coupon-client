@@ -1,0 +1,40 @@
+
+<h2>Edit coupon</h2>
+<form id="editCoupon">
+{{#data}}
+  <div><label for="name"><em>*</em>Name: </label>
+    <input value="{{ name }}" name="name" type="text">
+  </div>
+
+  <div><label for="description"><em>*</em>Description: </label>
+    <textarea value="{{ data.description }}" name="description" class="description" rows="5"></textarea>
+  </div>
+  
+  <div><label for="image_url"><em>*</em>Enter Image URL: </label>
+    <input type="text" name="logo_url" class="image_url" value="{{ logo_url }}">
+  </div>
+  
+  <div><label for="price">Price:</label>
+    <input name="price" type="text" class="price" size="10" value="{{ price }}"> CAD$
+  </div>
+
+  <div><label for="amount">Amount: </label>
+    <input name="amount" type="text" class="amount" size="10" value="{{ amount }}">
+  </div>
+
+  <div><label for="coupontype">Coupon Type: </label>
+    <select class="coupontype">
+      <option value="food">Food</option>
+      <option value="fashion">Fashion</option>
+      <option value="entertainment">Entertainment</option>
+      <option value="health">Health</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="date">Expiry Date:</label>
+    <input type="text" name="date" class="datepicker" value="{{ data.date }}"/>
+  </div>
+{{/data}}
+  <input type="submit" value="Edit">
+</form>
