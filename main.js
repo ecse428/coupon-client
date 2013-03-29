@@ -45,27 +45,26 @@ var routes = {
       app.renderPage(result);
     });
   },
-  
+
   'editcoupon': function() {
     var route = window.location.hash.split('/'),
         id = route.length == 2 ? route[1] : null;
 
     if (id === null) return app.error('Invalid Coupon');
-    
+
     app.setView('editcoupon');
     app.api('/coupons/' + id, function(result) {
-      console.log(result);
       if (result.error) return app.error(result.error);
       app.renderPage(result);
     });
   },
-  
-  'deletecoupon': function() {    
+
+  'deletecoupon': function() {
     var route = window.location.hash.split('/'),
         id = route.length == 2 ? route[1] : null;
-    
+
     if (id === null) return app.error('Invalid Coupon');
-    
+
     app.setView('deletecoupon');
     app.api('/coupons/' + id, function(result) {
       console.log(result);
@@ -80,8 +79,9 @@ var routes = {
       $('#contentStack .datepicker').datepicker();
     });
   },
+
   'managecoupon': function(){
-	app.setView('managecoupon');
+    app.setView('managecoupon');
     app.api('/mycoupons', function(result){
       if (result.error) return app.error(result.error);
       app.renderPage(result);
@@ -105,12 +105,14 @@ var routes = {
 
   'testpage': function() {
     app.setView('testpage');
-    app.renderPage();
+    app.api('/tests', function(result) {
+      app.renderPage(result);
+    });
   },
 
   'purchased': function() {
     app.setView('purchasedcoupon');
-    app.api('/users/' + app.self.user.id + '/purchased', function(result){
+    app.api('/users/' + app.self.user.id + '/purchased', function(result) {
       if (result.error) return app.error(result.error);
       app.renderPage(result);
     });
@@ -391,10 +393,6 @@ var handlers = {
         app.api('/coupons', 'POST', $form.serializeObject(), function(result) {
           app.route('index');
         });
-        
-        //app.createCoupon($form.serializeObject(), function(result) {
-        //  app.route('index');
-        //});
       }
     });
   },
@@ -420,12 +418,12 @@ var handlers = {
       }
     });
   },
-  
+
   editCoupon: function(){
     $(document).on('submit', '#editCoupon', function(ev) {
       ev.preventDefault();
       var $form = $("#editCoupon");
-      
+
       $form.validate({
         rules: {
           couponname: {required: true},
@@ -439,35 +437,35 @@ var handlers = {
           image_url: {required: 'URL cannot be empty'}
         }
       });
-      
+
       if ($form.valid()) {
         var route = window.location.hash.split('/'),
         id = route.length == 2 ? route[1] : null;
 
         if (id === null) return app.error('Invalid Edit');
-        
+
         app.api('/coupons/' + id, 'PUT', $form.serializeObject(), function(result) {
           app.route('index');
         });
-      };
+      }
     });
   },
-  
+
   deleteCoupon: function(){
     $(document).on('click', '#deleteCoupon', function(ev) {
       ev.preventDefault();
-      
+
       var route = window.location.hash.split('/'),
       id = route.length == 2 ? route[1] : null;
 
       if (id === null) return app.error('Invalid Edit');
-      
+
       app.api('/coupons/' + id, 'DELETE', function(result) {
         app.route('index');
       });
     });
   },
-      
+
   searchUser: function(){
     $(document).on('submit', '#searchUser', function(ev) {
       ev.preventDefault();
@@ -498,32 +496,32 @@ var handlers = {
       });
     });
   },
-  
+
   publishCoupon: function(){
     $(document).on('click', '#publishCoupon', function(ev) {
       ev.preventDefault();
-      
+
       var route = window.location.hash.split('/'),
       id = route.length == 2 ? route[1] : null;
 
       if (id === null) return app.error('Invalid Publish');
-      
+
       app.api('/coupons/publish/' + id, 'PUT', function(result) {
         if (result.error) return app.error(result.error);
         app.route('index');
       });
     });
   },
-  
+
   unpublishCoupon: function(){
     $(document).on('click', '#unpublishCoupon', function(ev) {
       ev.preventDefault();
-      
+
       var route = window.location.hash.split('/'),
       id = route.length == 2 ? route[1] : null;
 
       if (id === null) return app.error('Invalid Publish');
-      
+
       app.api('/coupons/unpublish/' + id, 'PUT', function(result) {
         if (result.error) return app.error(result.error);
         app.route('index');

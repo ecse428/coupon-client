@@ -1,5 +1,24 @@
 /*global test, asyncTest, ok, equal, expect, start */
 
+module("Client Tests", {
+
+  setup: function() {
+    app.self = {
+      authenticated: false,
+      user: {
+        type: 'visitor', // visitor or logged
+        id: 0,
+        name: 'Visitor'
+      },
+      controllerView: 'guest', // guest, index, profile, register, createcoupon, search, searchresult
+      controllerData: {},
+      nav: $('#navContainer .contentHolder'), // to hold navigation panel
+      content: $('#contentStack .contentHolder') // to hold content
+    };
+  }
+
+});
+
 asyncTest('Can connect to the API', function() {
   expect(1);
 
@@ -33,7 +52,7 @@ asyncTest('Can login with test user', function() {
   expect(3);
 
   app.login('alex', '12345678', function(data) {
-    equal(data.name, 'alex');
+    equal(app.self.user.name, 'alex');
     ok($.cookie('user_key'));
     ok($.cookie('key'));
     start();
@@ -66,31 +85,34 @@ asyncTest('Can load a different UI', function() {
 });
 
 asyncTest('Can search for test user', function() {
-  expect(2);
+  expect(3);
 
-  app.searchUser({username: 'alex'}, function(results) {
-    ok(results.status);
-    ok(results.data.length > 0);
+  app.api('/user_search', 'POST', {username: 'alex'}, function(result) {
+    ok(!result.error);
+    ok(result.status);
+    ok(result.data.length > 0);
     start();
   });
 });
 
 asyncTest('Can fuzzy search for a user', function() {
-  expect(2);
+  expect(3);
 
-  app.searchUser({username: 'ale'}, function(results) {
-    ok(results.status);
-    ok(results.data.length > 0);
+  app.api('/user_search', 'POST', {username: 'alex'}, function(result) {
+    ok(!result.error);
+    ok(result.status);
+    ok(result.data.length > 0);
     start();
   });
 });
 
 asyncTest('Can search for coupons', function() {
-  expect(2);
+  expect(3);
 
-  app.searchCoupon({couponname: ''}, function(results) {
-    ok(results.status);
-    ok(results.data.length > 0);
+  app.api('/coupon_search', 'POST', {couponname: ''}, function(result) {
+    ok(!result.error);
+    ok(result.status);
+    ok(result.data.length > 0);
     start();
   });
 });
