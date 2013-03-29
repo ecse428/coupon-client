@@ -253,7 +253,12 @@ var app = {
 
   error: function(err) {
     if (err.error) err = err.error;
-    alert('Error: ' + err);
+    
+    console.log(err);
+    app.alert('Error: ' + err);
+  },
+  alert: function(){
+	  alert("Sorry, we are experiencing techincal difficulty.");
   },
 
   login: function(username, password, cb) {
