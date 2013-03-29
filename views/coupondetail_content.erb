@@ -1,17 +1,14 @@
-{{#data}}
-  <h2>{{name}}</h2>
-  <div id="couponresult">
-    <form id="buyCoupon" data-uri-id="{{ id }}">
-      <p>
-        <label>Amount: </label>
-        <input name="purchased_quantity" type="text" class="purchased_quantity" size="6" value="1">
-        <input type="submit" value="Buy" />
-      </p>
-    </form>
+<h2>{{name}}</h2>
+<div id="couponresult">
+  <form id="buyCoupon">
+    <label>Amount: </label>
+    <input name="purchased_quantity" type="text" class="purchased_quantity" size="6" value="1" />
+    <input type="hidden" value="{{ data.id }}" class="coupon_id" />
+    <input type="submit" value="Buy" />
+  </form>
 
-    <p>ID: {{ id }}</p>
-    <p>Description: {{ description }}</p>
-    <p><img src="{{ logo_url }}"/></p>
-    <p>Type: {{ coupontype }}</p>
-  </div>
-{{/data}}
+  <p>ID: {{ data.id }}</p>
+  <p>Description: {{ data.description }}</p>
+  <p><img src="{{ data.logo_url }}"/></p>
+  <p>Type: {{ data.coupontype }}</p>
+</div>
