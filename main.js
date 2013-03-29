@@ -84,6 +84,11 @@ var routes = {
     app.setView('managecoupon');
     app.api('/mycoupons', function(result){
       if (result.error) return app.error(result.error);
+      $.each(result.data, function(i){
+		  result.data[i].published = result.data[i].published == 't' ? true : false;
+		  result.data[i].publishing = result.data[i].publishing == 't' ? true : false; 
+	  });
+	  console.log(result);
       app.renderPage(result);
     });
   },
@@ -122,6 +127,7 @@ var routes = {
     $.removeCookie('user_key');
     $.removeCookie('key');
     app.route('guest');
+    window.location = '/';
   },
 
   'searchusers': function() {
@@ -250,7 +256,12 @@ var app = {
 
   error: function(err) {
     if (err.error) err = err.error;
-    alert('Error: ' + err);
+    
+    console.log(err);
+    app.alert('Error: ' + err);
+  },
+  alert: function(){
+	  alert("Sorry, we are experiencing techincal difficulty.");
   },
 
   login: function(username, password, cb) {
@@ -508,7 +519,7 @@ var handlers = {
 
       app.api('/coupons/publish/' + id, 'PUT', function(result) {
         if (result.error) return app.error(result.error);
-        app.route('index');
+        app.route('managecoupon');
       });
     });
   },
@@ -524,7 +535,7 @@ var handlers = {
 
       app.api('/coupons/unpublish/' + id, 'PUT', function(result) {
         if (result.error) return app.error(result.error);
-        app.route('index');
+        app.route('managecoupon');
       });
     });
   }

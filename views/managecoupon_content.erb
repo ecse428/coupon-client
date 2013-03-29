@@ -1,5 +1,6 @@
-<h3>Publishing</h3>
-<ul id="recentCoupons">
+
+<ul class="coupons">
+  <h3>Running Coupons (publishing)</h3>
   {{#data}}
 	{{#publishing}}
     <li>
@@ -13,8 +14,8 @@
   {{/data}}
 </ul>
 
-<h3>Published</h3>
-<ul id="recentCoupons">
+
+<ul class="coupons"><h3>Available Coupons (Published)</h3>
   {{#data}}
 	{{#published}}
     <li>
@@ -28,8 +29,8 @@
   {{/data}}
 </ul>
 
-<h3>All Coupons</h3>
-<ul id="recentCoupons">
+
+<ul class="coupons"><h3>All Coupons</h3>
   {{#data}}
     <li>
       <a href="#" data-route="coupon/{{ id }}">
