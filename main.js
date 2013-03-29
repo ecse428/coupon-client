@@ -10,6 +10,7 @@ var routes = {
   'guest': function() {
     app.setView('guest');
     app.api('/coupons', function(result) {
+      console.log('result', result);
       if (result.error) return app.error(result.error);
       app.renderPage(result);
     });
@@ -40,8 +41,8 @@ var routes = {
 
     app.setView('coupondetail');
     app.api('/coupons/' + id, function(result) {
-      console.log(result);
       if (result.error) return app.error(result.error);
+      if (result.data.owner_id == app.self.user.id) result.data.owner = true;
       app.renderPage(result);
     });
   },
@@ -85,10 +86,9 @@ var routes = {
     app.api('/mycoupons', function(result){
       if (result.error) return app.error(result.error);
       $.each(result.data, function(i){
-		  result.data[i].published = result.data[i].published == 't' ? true : false;
-		  result.data[i].publishing = result.data[i].publishing == 't' ? true : false; 
-	  });
-	  console.log(result);
+        result.data[i].published = result.data[i].published == 't' ? true : false;
+        result.data[i].publishing = result.data[i].publishing == 't' ? true : false;
+      });
       app.renderPage(result);
     });
   },
@@ -256,12 +256,9 @@ var app = {
 
   error: function(err) {
     if (err.error) err = err.error;
-    
+
     console.log(err);
-    app.alert('Error: ' + err);
-  },
-  alert: function(){
-	  alert("Sorry, we are experiencing techincal difficulty.");
+    alert('Error: ' + err);
   },
 
   login: function(username, password, cb) {

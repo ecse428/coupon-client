@@ -12,9 +12,9 @@
   <p><img src="{{ data.logo_url }}"/></p>
   <p>Type: {{ data.coupontype }}</p>
 </div>
-<div id="publishcoupon">
+{{ #data.owner }}
+<div>
   <input type="button" value="Publish" id="publishCoupon">
-</div>
-<div id="unpublishcoupon">
   <input type="button" value="Unpublish" id="unpublishCoupon">
 </div>
+{{ /data.owner }}

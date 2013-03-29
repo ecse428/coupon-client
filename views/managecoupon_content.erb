@@ -2,14 +2,14 @@
 <ul class="coupons">
   <h3>Running Coupons (publishing)</h3>
   {{#data}}
-	{{#publishing}}
-    <li>
-      <a href="#" data-route="coupon/{{ id }}">
-        <p>{{name}} <span class="triangle">${{price}}</span></p>
-        <p><img src="{{logo_url}}"/></p>
-        <p>Brief: {{description}}</p>
-      </a>
-    </li>
+    {{#publishing}}
+      <li>
+        <a href="#" data-route="coupon/{{ id }}">
+          <p>{{name}} <span class="triangle">${{price}}</span></p>
+          <p><img src="{{logo_url}}"/></p>
+          <p>Brief: {{description}}</p>
+        </a>
+      </li>
     {{/publishing}}
   {{/data}}
 </ul>
@@ -17,20 +17,21 @@
 
 <ul class="coupons"><h3>Available Coupons (Published)</h3>
   {{#data}}
-	{{#published}}
-    <li>
-      <a href="#" data-route="coupon/{{ id }}">
-        <p>{{name}} <span class="triangle">${{price}}</span></p>
-        <p><img src="{{logo_url}}"/></p>
-        <p>Brief: {{description}}</p>
-      </a>
-    </li>
+    {{#published}}
+      <li>
+        <a href="#" data-route="coupon/{{ id }}">
+          <p>{{name}} <span class="triangle">${{price}}</span></p>
+          <p><img src="{{logo_url}}"/></p>
+          <p>Brief: {{description}}</p>
+        </a>
+      </li>
     {{/published}}
   {{/data}}
 </ul>
 
 
-<ul class="coupons"><h3>All Coupons</h3>
+<ul class="coupons">
+  <h3>All Coupons</h3>
   {{#data}}
     <li>
       <a href="#" data-route="coupon/{{ id }}">
