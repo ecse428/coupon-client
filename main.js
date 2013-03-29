@@ -80,6 +80,10 @@ var routes = {
       $('#contentStack .datepicker').datepicker();
     });
   },
+  'managecoupon': function(){
+	app.setView('managecoupon');
+    app.renderPage();
+  },
 
   'register': function() {
     app.setView('register');
