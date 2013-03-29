@@ -318,6 +318,8 @@ var handlers = {
     handlers.buyCoupon();
     handlers.editCoupon();
     handlers.deleteCoupon();
+    handlers.publishCoupon();
+    handlers.unpublishCoupon();
   },
 
   login: function() {
@@ -453,11 +455,11 @@ var handlers = {
       ev.preventDefault();
       
       var route = window.location.hash.split('/'),
-        id = route.length == 2 ? route[1] : null;
+      id = route.length == 2 ? route[1] : null;
 
-        if (id === null) return app.error('Invalid Edit');
+      if (id === null) return app.error('Invalid Edit');
       
-      app.api('/coupons/ + id', 'DELETE', function(result) {
+      app.api('/coupons/' + id, 'DELETE', function(result) {
         app.route('index');
       });
     });
@@ -490,6 +492,38 @@ var handlers = {
       app.api('/coupons/' + id + '/buy', 'POST', $form.serializeObject(), function(result) {
         if (result.error) return app.error(result.error);
         app.route('purchased');
+      });
+    });
+  },
+  
+  publishCoupon: function(){
+    $(document).on('click', '#publishCoupon', function(ev) {
+      ev.preventDefault();
+      
+      var route = window.location.hash.split('/'),
+      id = route.length == 2 ? route[1] : null;
+
+      if (id === null) return app.error('Invalid Publish');
+      
+      app.api('/coupons/publish/' + id, 'PUT', function(result) {
+        if (result.error) return app.error(result.error);
+        app.route('index');
+      });
+    });
+  },
+  
+  unpublishCoupon: function(){
+    $(document).on('click', '#unpublishCoupon', function(ev) {
+      ev.preventDefault();
+      
+      var route = window.location.hash.split('/'),
+      id = route.length == 2 ? route[1] : null;
+
+      if (id === null) return app.error('Invalid Publish');
+      
+      app.api('/coupons/unpublish/' + id, 'PUT', function(result) {
+        if (result.error) return app.error(result.error);
+        app.route('index');
       });
     });
   }
