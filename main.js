@@ -82,7 +82,10 @@ var routes = {
   },
   'managecoupon': function(){
 	app.setView('managecoupon');
-    app.renderPage();
+    app.api('/mycoupons', function(result){
+      if (result.error) return app.error(result.error);
+      app.renderPage(result);
+    });
   },
 
   'register': function() {
