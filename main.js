@@ -58,7 +58,21 @@ var routes = {
       if (result.error) return app.error(result.error);
       app.renderPage(result);
     });
-  },    
+  },
+  
+  'deletecoupon': function() {    
+    var route = window.location.hash.split('/'),
+        id = route.length == 2 ? route[1] : null;
+    
+    if (id === null) return app.error('Invalid Coupon');
+    
+    app.setView('deletecoupon');
+    app.api('/coupons/' + id, function(result) {
+      console.log(result);
+      if (result.error) return app.error(result.error);
+      app.renderPage(result);
+    });
+  },
 
   'createcoupon': function() {
     app.setView('createcoupon');
@@ -299,6 +313,7 @@ var handlers = {
     handlers.searchCoupon();
     handlers.buyCoupon();
     handlers.editCoupon();
+    handlers.deleteCoupon();
   },
 
   login: function() {
@@ -428,7 +443,21 @@ var handlers = {
       };
     });
   },
+  
+  deleteCoupon: function(){
+    $(document).on('click', '#deleteCoupon', function(ev) {
+      ev.preventDefault();
       
+      var route = window.location.hash.split('/'),
+        id = route.length == 2 ? route[1] : null;
+
+        if (id === null) return app.error('Invalid Edit');
+      
+      app.api('/coupons/ + id', 'DELETE', function(result) {
+        app.route('index');
+      });
+    });
+  },
       
   searchUser: function(){
     $(document).on('submit', '#searchUser', function(ev) {
