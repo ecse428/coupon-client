@@ -1,11 +1,15 @@
 <h2>Search Result</h2>
 <ul id="recentCoupons">
-{{#data}}
-<li>
-  <a href="#" class="couponDetailTrigger" data-uri-id="{{id}}">
-  <p>{{name}} <span class="triangle">${{price}}</span></p>
-  <p><img src="{{logo_url}}"/></p>
-  <p>Brief: {{description}}</p></a>
-</li>
-{{/data}}
+  {{ #data }}
+    <li>
+      <a href="#" data-roude="coupon/{{ id }}">
+        <p>{{name}} <span class="triangle">${{price}}</span></p>
+        <p><img src="{{logo_url}}"/></p>
+        <p>Brief: {{description}}</p>
+      </a>
+    </li>
+  {{ /data }}
+  {{ ^data }}
+    <h3>No Coupons Found</h3>
+  {{ /data }}
 </ul>

@@ -1,10 +1,11 @@
 <ul id="recentCoupons">
-{{#data}}
-<li>
-  <a href="#" class="couponDetailTrigger" data-uri-id="{{id}}">
-  <p>{{name}} <span class="triangle">${{price}}</span></p>
-  <p><img src="{{logo_url}}"/></p>
-  <p>Brief: {{description}}</p></a>
-</li>
-{{/data}}
+  {{#data}}
+    <li>
+      <a href="#" data-route="coupon/{{ id }}">
+        <p>{{name}} <span class="triangle">${{price}}</span></p>
+        <p><img src="{{logo_url}}"/></p>
+        <p>Brief: {{description}}</p>
+      </a>
+    </li>
+  {{/data}}
 </ul>

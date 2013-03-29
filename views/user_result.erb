@@ -1,8 +1,12 @@
 <h2>Search Result</h2>
+
 {{ #data }}
-<div>
-  <p>Username: {{ username }}</p>
-  <p>Email: {{ email }}</p>
-</div>
-<hr/>
+  <div>
+    <p>Username: {{ username }}</p>
+    <p>Email: {{ email }}</p>
+  </div>
+  <hr/>
+{{ /data }}
+{{ ^data }}
+  <h3>No Users Found</h3>
 {{ /data }}

@@ -1,3 +1,112 @@
+var routes = {
+  'index': function() {
+    app.setView('index');
+    app.api('/coupons', function(result) {
+      if (result.error) return app.error(result.error);
+      app.renderPage(result);
+    });
+  },
+
+  'guest': function() {
+    app.setView('guest');
+    app.api('/coupons', function(result) {
+      if (result.error) return app.error(result.error);
+      app.renderPage(result);
+    });
+  },
+
+  'profile': function() {
+    app.setView('profile');
+    app.api('/users/' + app.self.user.id, function(result) {
+      if (result.error) return app.error(result.error);
+      if (result.accounttype == 'admin') result.admin = true;
+      app.renderPage(result);
+    });
+  },
+
+  'editprofile': function() {
+    app.setView('editprofile');
+    app.api('/users/' + app.self.user.id, function(result) {
+      if (result.error) return app.error(result.error);
+      app.renderPage(result);
+    });
+  },
+
+  'coupon': function() {
+    var route = window.location.hash.split('/'),
+        id = route.length == 2 ? route[1] : null;
+
+    if (id === null) return app.error('Invalid URL');
+
+    app.setView('coupondetail');
+    app.api('/coupons/' + id, function(result) {
+      if (result.error) return app.error(result.error);
+      app.renderPage(result);
+    });
+  },
+
+  'createcoupon': function() {
+    app.setView('createcoupon');
+    app.renderPage({}, function() {
+      $('#contentStack .datepicker').datepicker();
+    });
+  },
+
+  'register': function() {
+    app.setView('register');
+    app.renderPage();
+  },
+
+  'search': function() {
+    app.setView('search');
+    app.renderPage();
+  },
+
+  'settings': function() {
+    app.setView('settings');
+    app.renderPage();
+  },
+
+  'testpage': function() {
+    app.setView('testpage');
+    app.renderPage();
+  },
+
+  'purchased': function() {
+    app.setView('purchasedcoupon');
+    app.api('/coupons/purchased/' + app.self.user.id, function(result){
+      if (result.error) return app.error(result.error);
+      app.renderPage(result);
+    });
+  },
+
+  'logout': function() {
+    $.removeCookie('user_key');
+    $.removeCookie('key');
+    app.route('guest');
+  },
+
+  'searchusers': function() {
+    var data = app.getQueryParams();
+
+    app.api('/user_search', 'POST', data, function(result) {
+      if (result.error) return app.error(result.error);
+      app.setView('user_result');
+      app.renderPage(result);
+    });
+  },
+
+  'searchcoupons': function() {
+    var data = app.getQueryParams();
+
+    app.api('/coupon_search', 'POST', data, function(result) {
+      if (result.error) return app.error(result.error);
+      app.setView('coupon_result');
+      app.renderPage(result);
+    });
+  }
+};
+
 var app = {
   self: {
     authenticated: false,
@@ -12,29 +121,66 @@ var app = {
     content: $('#contentStack .contentHolder') // to hold content
   },
 
+  route: function(uri, data) {
+    if (window.location.hash.substr(1) == uri && !data) {
+      return $(window).hashchange();
+    }
+
+    var query = '?';
+    $.each(data || {}, function(key, val) {
+      query += key + '=' + encodeURIComponent(val) + '&';
+    });
+
+    window.location.hash = uri + query.slice(0, -1);
+  },
+
+  getQueryParams: function() {
+    if (window.location.hash.split('?').length != 2) return {};
+
+    var result = {},
+        queryStr = window.location.hash.split('?')[1],
+        queries = queryStr.split('&');
+
+    $.each(queries, function(ind, val) {
+      var d = val.split('=');
+      result[d[0]] = decodeURIComponent(d[1]);
+    });
+
+    return result;
+  },
+
+  routeHandler: function(ev) {
+    ev.preventDefault();
+
+    var route = $(ev.currentTarget).data('route');
+    app.route(route.split('/')[0]);
+  },
+
   init: function() {
-    app.setUpNumerics();
+    $(window).hashchange(function() {
+      var hash = window.location.hash.substr(1).split('?')[0],
+          handler = routes[hash] || routes.index;
+      handler();
+    });
+
+    $(document).on('click', 'a[data-route]', app.routeHandler);
+
     app.api('/login/test', function(result) {
       if (result.status) {
         app.setUpLoggedIn(result.username, result.user_id);
+        return $(window).hashchange();
       }
+
+      app.route('guest');
     });
   },
 
   authenticated: function(){
     return app.self.authenticated;
   },
+
   setView: function(viewName){
-	  app.self.controllerView = viewName;
-  },
-  load: function(view){
-	  if (app.self.controllerView != view){
-        app.setView(view);
-        app.renderPage();
-      }
-  },
-  refresh: function(){
-	  
+    app.self.controllerView = viewName;
   },
 
   api: function() {
@@ -69,14 +215,6 @@ var app = {
     alert('Error: ' + err);
   },
 
-  loadData: function(uri){
-    app.self.controllerData = {};
-    app.api('/data', 'GET', {param: uri}, function(result){
-      if (result.error) return app.error(result.error);
-      app.self.controllerData = result.data;
-    });
-  },
-
   login: function(username, password, cb) {
     var data = { username: username, password: password };
 
@@ -90,12 +228,6 @@ var app = {
     });
   },
 
-  logOut: function() {
-    $.cookie('user_key', null);
-    $.cookie('key', null);
-    window.location = '/';
-  },
-
   setUpLoggedIn: function(username, id) {
     app.self.authenticated = true;
     app.self.user = {
@@ -104,13 +236,7 @@ var app = {
       name: username
     };
 
-    //app.self.controllerView = 'index';
-    app.setView('index');
     $('#login').parent().html('<p class="goToProfile"><img src="/imgs/head.png"/> ' + app.self.user.name + '</p>');
-
-    app.getCoupons(function(result){
-      app.renderPage(result);
-    });
   },
 
   register: function(data, cb){
@@ -120,9 +246,18 @@ var app = {
     });
   },
 
-  setUpNumerics: function() {
-    $('.creditnumber').numeric();
-    $('.phonenumber').numeric();
+  createCoupon: function(data, cb){
+    app.api('/coupons', 'POST', data, function(result){
+      if (result.error) return app.error(result.error);
+      cb({status: result.status});
+    });
+  },
+
+  buyCoupon: function(data, user_id, id, cb){
+    app.api('/coupons/buy/' + user_id + '/' + id, 'POST', data, function(result){
+      if (result.error) return app.error(result.error);
+      cb(result);
+    });
   },
 
   ui: function(cb){
@@ -136,93 +271,10 @@ var app = {
     });
   },
 
-  setAddress: function() {
-    var address = "";
-    $("#address1, #address2, #city, #province, #postalcode").each(function(){
-      address += $.trim($(this).val()) + " ";
-    });
-
-    document.getElementById("address").value=address;
-  },
-
-  date_pick: function() {
-    $("#datepicker").datepicker();
-  },
-
-  createCoupon: function(data, cb){
-    app.api('/coupons', 'POST', data, function(result){
-      if (result.error) return app.error(result.error);
-      cb({status: result.status});
-    });
-  },
-
-  getCoupons: function(cb){
-    app.api('/coupons', function(result){
-      if (result.error) return app.error(result.error);
-      cb(result);
-    });
-  },
-
-  getAllCoupons: function(cb){
-    app.api('/coupons/all', function(result){
-      if (result.error) return app.error(result.error);
-      cb(result);
-    });
-  },
-
-  getCoupon: function(id, cb){
-    app.api('/coupons/' + id, function(result){
-      if (result.error) return app.error(result.error);
-      cb(result);
-    });
-  },
-  
-  getPurchasedCoupons: function(user_id, cb){
-    app.api('/coupons/purchased/' + user_id, function(result){
-      if (result.error) return app.error(result.error);
-      cb(result);
-    });
-    //temp
-	//app.getAllCoupons(cb);
-  },
-
-  buyCoupon: function(data, user_id, id, cb){
-    app.api('/coupons/buy/' + user_id + '/' + id, 'POST', data, function(result){
-      if (result.error) return app.error(result.error);
-      cb(result);
-    });
-  },
-
-  editUserProfile: function(data, cb) {
-    app.api('/users/' + app.self.user.id, 'PUT', data, function(result) {
-      if (result.error) return app.error(result.error);
-      cb({status: result.status});
-    });
-  },
-
-  searchUser: function(data, cb) {
-    app.api('/user_search', 'POST', data, function(result) {
-      console.log('res', result);
-      if (result.error) return app.error(result.error);
-      cb(result);
-    });
-  },
-
-  searchCoupon: function(data, cb) {
-    app.api('/coupon_search', 'POST', data, function(result) {
-      if (result.error) return app.error(result.error);
-      cb(result);
-    });
-  },
-
-  renderPage: function(data) {
-    if (!data) data = app.self.controllerData;
-
-    if (app.self.controllerView == 'guest'){
-      app.getAllCoupons(function(result) {
-        data = result;
-      });
-    }
+  renderPage: function() {
+    var args = Array.prototype.slice.call(arguments),
+        data = args.shift() || app.self.controllerData || {},
+        cb = args.shift() || function() {};
 
     app.ui(function(result){
       var content = Mustache.render(result.tmpl.content, data),
@@ -230,178 +282,39 @@ var app = {
 
       app.self.content.html(content).hide().slideDown();
       app.self.nav.html(nav).hide().slideDown();
+      cb();
     });
   }
 };
 
 var handlers = {
   setup: function() {
-    handlers.loadRegisterView();
-    handlers.loadIndexView();
-    handlers.loadGuestView();
-    handlers.loadCreateCouponView();
-    handlers.loadProfileView();
-    handlers.loadEditProfileView();
-    handlers.loadSettingsView();
-    handlers.loadPurchasedCoupon();
-    handlers.logOut();
-    handlers.register();
     handlers.login();
+    handlers.register();
     handlers.createCoupon();
     handlers.editUserProfile();
-    handlers.loadSearchView();
     handlers.searchUser();
     handlers.searchCoupon();
     handlers.buyCoupon();
-    handlers.loadCouponDetailView();
-    handlers.loadTestpageView();
-
-    app.renderPage();
   },
 
   login: function() {
-    $('#login').submit(function(ev) {
+    $(document).on('submit', '#login', function(ev) {
       ev.preventDefault();
       var username = $('#login .username').val(),
           password = $('#login .password').val();
 
       app.login(username, password, function(result) {
         app.setUpLoggedIn(result.name, result.id);
+        app.route('index');
       });
     });
-  },
-
-
-  loadRegisterView : function(){
-    $(document).on('click','.registerTrigger', function(e){
-      e.preventDefault();
-	  app.load('register');
-	  
-    });
-  },
-
-  loadProfileView : function(){
-    $(document).on('click','.profileTrigger', function(e) {
-      e.preventDefault();
-
-      app.api('/users/' + app.self.user.id, function(data) {
-        if (data.accounttype == 'admin') data.admin = true;
-        if (app.self.controllerView != 'profile'){
-          app.setView('profile');
-          app.renderPage(data);
-        }
-      });
-    });
-  },
-
-  loadEditProfileView : function(){
-    $(document).on('click','.editProfileTrigger', function(e){
-      e.preventDefault();
-
-      app.api('/users/' + app.self.user.id, function(data) {
-        if (app.self.controllerView != 'editprofile'){
-          app.setView('editprofile');
-          app.renderPage(data);
-        }
-      });
-    });
-  },
-
-  loadIndexView : function(){
-    $(document).on('click', '.indexTrigger', function(e) {
-      e.preventDefault();
-
-      // fetch template if necessary
-      if (app.self.controllerView != 'index') {
-        app.setView('index');
-
-        // fetch data and render
-        app.getCoupons(function(result){
-          app.renderPage(result);
-        });
-      }
-    });
-  },
-
-  loadSearchView : function(){
-    $(document).on('click', '.searchTrigger', function(e) {
-      e.preventDefault();
-      
-      app.load('search');
-    });
-  },
-
-  loadGuestView : function(){
-    $(document).on('click', '.guestTrigger', function(e) {
-      e.preventDefault();
-
-      if (app.self.controllerView != 'guest') {
-        app.setView('guest');
-
-        app.getAllCoupons(function(result){
-          app.renderPage(result);
-        });
-      }
-    });
-  },
-
-  loadCreateCouponView: function(){
-    $(document).on('click','.couponCreateTrigger', function(e){
-      e.preventDefault();
-
-      if (app.self.controllerView != 'createcoupon'){
-        app.setView('createcoupon');
-        app.renderPage();
-        $('#contentStack .datepicker').datepicker();
-      }
-    });
-  },
-
-  loadSettingsView: function(){
-    $(document).on('click','.settingsTrigger', function(e){
-      e.preventDefault();
-      
-      app.load('settings');
-    });
-  },
-  
-  loadCouponDetailView: function(){
-    $(document).on('click','.couponDetailTrigger', function(e){
-      e.preventDefault();
-
-      var id = $(this).attr('data-uri-id');
-      if (app.self.controllerView != 'coupondetail') {
-        app.setView('coupondetail');
-
-        app.getCoupon(id, function(result){
-          app.renderPage(result);
-        });
-      }
-    });
-  },
-  
-  loadPurchasedCoupon: function(){
-    $(document).on('click', '.couponPurchasedTrigger', function(e){
-      e.preventDefault();
-      
-      var user_id = app.self.user.id;
-      if (app.self.controllerView != 'purchasedcoupon'){
-        app.setView('purchasedcoupon');
-        app.getPurchasedCoupons(user_id, function(result){
-          app.renderPage(result);
-        });
-      }
-    });
-  },
-
-  coupons: function(){
-    app.getCoupons(function(result){});
   },
 
   register: function() {
-    $(document).on('click', '.submitRegistration', function(e){
-      e.preventDefault();
-      var $form = $("#contentStack #register");
+    $(document).on('submit', '#register', function(ev){
+      ev.preventDefault();
+      var $form = $('#register');
 
       $form.validate({
         rules: {
@@ -422,6 +335,7 @@ var handlers = {
         app.register(formData, function(result) {
           app.login(formData.username, formData.password, function(data) {
             app.setUpLoggedIn(data.name, data.id);
+            app.route('index');
           });
         });
       }
@@ -447,28 +361,19 @@ var handlers = {
         }
       });
 
-      if ($form.valid()){
-        app.createCoupon($form.serializeObject(), function(result){
-          app.setView('index');
-          app.getCoupons(function(result){
-            app.renderPage(result);
-          });
+      if ($form.valid()) {
+        app.createCoupon($form.serializeObject(), function(result) {
+          app.route('index');
         });
       }
     });
   },
 
-  logOut: function(){
-    $(document).on('click', '.logoutTrigger', function(e){
-      e.preventDefault();
-      app.logOut();
-    });
-  },
-
   editUserProfile: function(){
-    $(document).on('submit', '#editUserProfile', function(e){
-      e.preventDefault();
-      var $form = $("#contentStack #editUserProfile");
+    $(document).on('submit', '#editUserProfile', function(ev) {
+      ev.preventDefault();
+      var $form = $("#editUserProfile");
+
       $form.validate({
         rules: {
           email: {email: true}
@@ -478,30 +383,20 @@ var handlers = {
         }
       });
 
-      if ($form.valid()){
-        app.editUserProfile($form.serializeObject(), function(result){
-          app.api('/users/' + app.self.user.id, function(data) {
-            if (app.self.controllerView != 'profile'){
-              app.setView('profile');
-              app.renderPage(data);
-            }
-          });
+      if ($form.valid()) {
+        app.api('/users/' + app.self.user.id, 'PUT', $form.serializeObject(), function(result) {
+          app.route('profile');
         });
       }
     });
   },
 
   searchUser: function(){
-    $(document).on('submit', '#searchUser', function(e){
-      e.preventDefault();
+    $(document).on('submit', '#searchUser', function(ev) {
+      ev.preventDefault();
       var $form = $("#searchUser");
 
-      app.searchUser($form.serializeObject(), function(data){
-        if (app.self.controllerView != 'user_result'){
-          app.setView('user_result');
-          app.renderPage(data);
-        }
-      });
+      app.route('searchusers', $form.serializeObject());
     });
   },
 
@@ -510,13 +405,7 @@ var handlers = {
       e.preventDefault();
       var $form = $("#searchCoupon");
 
-      app.searchCoupon($form.serializeObject(), function(data){
-        console.log('data', data);
-        if (app.self.controllerView != 'coupon_result'){
-          app.setView('coupon_result');
-          app.renderPage(data);
-        }
-      });
+      app.route('searchcoupons', $form.serializeObject());
     });
   },
 
@@ -527,25 +416,11 @@ var handlers = {
       var user_id = app.self.user.id;
       var id = $(this).attr('data-uri-id');
       app.buyCoupon($form.serializeObject(), user_id, id, function(data){
-        //alert(data.status);
         if (app.self.controllerView != 'purchasedcoupon'){
           app.setView('purchasedcoupon');
           app.getPurchasedCoupons(user_id, function(result){
           app.renderPage(result);
         });
-        }
-      });
-    });
-  },
-
-  loadTestpageView : function(){
-    $(document).on('click','.testpageTrigger', function(e) {
-      e.preventDefault();
-
-      app.api('/tests', function(data) {
-        if (app.self.controllerView != 'testpage'){
-          app.setView('testpage');
-          app.renderPage(data);
         }
       });
     });
